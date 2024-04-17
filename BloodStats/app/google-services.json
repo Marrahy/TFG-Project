@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "967071463598",
+    "project_id": "bloodstats-63ce9",
+    "storage_bucket": "bloodstats-63ce9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:967071463598:android:6818595fbe737ed812953f",
+        "android_client_info": {
+          "package_name": "com.sergimarrahyarenas.bloodstats"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "967071463598-mo51lslcf1o9tucjv1tsnrufm8g5ab65.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sergimarrahyarenas.bloodstats",
+            "certificate_hash": "4b2fd566b625a64e9da2c3910fce8e15d9a77cf4"
+          }
+        },
+        {
+          "client_id": "967071463598-84eq62cg51r4elff5i65m8scn9pgdb4c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBP7A5oXzSFD14J-N_-r0vQJHJ2ea0rbhw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "967071463598-84eq62cg51r4elff5i65m8scn9pgdb4c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
