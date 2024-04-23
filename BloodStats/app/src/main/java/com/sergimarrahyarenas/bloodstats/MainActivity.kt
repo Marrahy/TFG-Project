@@ -10,8 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sergimarrahyarenas.api.ViewModel
 import com.sergimarrahyarenas.bloodstats.navigation.Navigation
-import com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.SignInViewModel
+import com.sergimarrahyarenas.core.presentation.sign_in.SignInViewModel
 import com.sergimarrahyarenas.bloodstats.ui.theme.BloodStatsTheme
 
 class MainActivity : ComponentActivity() {
@@ -24,7 +25,7 @@ class MainActivity : ComponentActivity() {
 
                 Navigation(
                     viewModel = viewModel,
-                    context = context
+                    context = context,
                 )
             }
         }

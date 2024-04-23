@@ -2,20 +2,23 @@ package com.sergimarrahyarenas.bloodstats.navigation
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.auth.api.identity.Identity
-import com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.GoogleAuthUiClient
-import com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.SignInViewModel
+import com.sergimarrahyarenas.api.ViewModel
+import com.sergimarrahyarenas.core.presentation.sign_in.GoogleAuthUiClient
+import com.sergimarrahyarenas.core.presentation.sign_in.SignInViewModel
 import com.sergimarrahyarenas.bloodstats.ui.screens.LoginScreen
+import com.sergimarrahyarenas.bloodstats.ui.screens.MainScreen
 import com.sergimarrahyarenas.bloodstats.ui.screens.ProfileScreen
 import com.sergimarrahyarenas.bloodstats.ui.screens.SplashScreen
 
 @Composable
 fun Navigation(
     viewModel: SignInViewModel,
-    context: Context
+    context: Context,
 ) {
     val navController = rememberNavController()
     val googleAuthUiClient by lazy {
@@ -49,11 +52,11 @@ fun Navigation(
 //        ) {
 //            RegisterScreen(navController = navController)
 //        }
-//        composable(
-//            route = Routes.MainScreen.route
-//        ) {
-//            MainScreen(navController = navController)
-//        }
+        composable(
+            route = Routes.MainScreen.route
+        ) {
+            MainScreen()
+        }
         composable(
             route = Routes.ProfileScreen.route
         ) {

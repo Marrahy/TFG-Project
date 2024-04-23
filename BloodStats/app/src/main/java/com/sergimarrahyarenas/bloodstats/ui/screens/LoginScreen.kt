@@ -28,8 +28,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.sergimarrahyarenas.bloodstats.R
-import com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.GoogleAuthUiClient
-import com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.SignInViewModel
+import com.sergimarrahyarenas.core.presentation.sign_in.GoogleAuthUiClient
+import com.sergimarrahyarenas.core.presentation.sign_in.SignInViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -134,10 +134,10 @@ fun LoginScreen(
 
             Button(
                 onClick = {
-                    navController.navigate("register_screen")
+                    navController.navigate("main_screen")
                 },
             ) {
-                Text(text = "Register")
+                Text(text = "Get Token")
             }
         }
     }

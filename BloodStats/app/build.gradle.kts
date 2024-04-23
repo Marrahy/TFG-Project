@@ -75,6 +75,12 @@ dependencies {
     //LiveData
     implementation("androidx.compose.runtime:runtime-livedata:1.6.5")
 
+    //Retrofit2
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+
+    //Serialize
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+
     //LifeCycle
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
