@@ -21,20 +21,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.sergimarrahyarenas.core.presentation.sign_in.GoogleAuthUiClient
-import com.sergimarrahyarenas.core.presentation.sign_in.SignInViewModel
-import com.sergimarrahyarenas.core.presentation.sign_in.UserData
+import com.sergimarrahyarenas.core.sign_in.GoogleAuthUiClient
+import com.sergimarrahyarenas.core.sign_in.SignInViewModel
+import com.sergimarrahyarenas.core.sign_in.UserData
 import kotlinx.coroutines.launch
 
 @Composable
 fun ProfileScreen(
     navController: NavController,
     userData: UserData?,
-    viewModel: SignInViewModel,
     googleAuthUiClient: GoogleAuthUiClient,
-    context: Context
+    context: Context,
+    viewModel: SignInViewModel
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
