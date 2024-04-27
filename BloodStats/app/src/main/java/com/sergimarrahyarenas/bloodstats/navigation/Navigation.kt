@@ -7,18 +7,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.auth.api.identity.Identity
-import com.sergimarrahyarenas.api.ViewModel
-import com.sergimarrahyarenas.core.presentation.sign_in.GoogleAuthUiClient
-import com.sergimarrahyarenas.core.presentation.sign_in.SignInViewModel
+import com.sergimarrahyarenas.api.viewmodel.BlizzardViewModel
 import com.sergimarrahyarenas.bloodstats.ui.screens.LoginScreen
-import com.sergimarrahyarenas.bloodstats.ui.screens.MainScreen
 import com.sergimarrahyarenas.bloodstats.ui.screens.ProfileScreen
 import com.sergimarrahyarenas.bloodstats.ui.screens.SplashScreen
+import com.sergimarrahyarenas.core.sign_in.GoogleAuthUiClient
+import com.sergimarrahyarenas.core.sign_in.SignInViewModel
 
 @Composable
 fun Navigation(
-    viewModel: SignInViewModel,
     context: Context,
+    blizzardViewModel: BlizzardViewModel,
+    signInViewModel: SignInViewModel
 ) {
     val navController = rememberNavController()
     val googleAuthUiClient by lazy {
@@ -43,8 +43,9 @@ fun Navigation(
         ) {
             LoginScreen(
                 navController = navController,
-                viewModel = viewModel,
-                googleAuthUiClient = googleAuthUiClient
+                googleAuthUiClient = googleAuthUiClient,
+                context = context,
+                viewModel = signInViewModel
             )
         }
 //        composable(
@@ -52,20 +53,24 @@ fun Navigation(
 //        ) {
 //            RegisterScreen(navController = navController)
 //        }
-        composable(
-            route = Routes.MainScreen.route
-        ) {
-            MainScreen()
-        }
+//        composable(
+//            route = Routes.MainScreen.route
+//        ) {
+//            MainScreen(
+//                navController = navController,
+//                blizzardViewModel = blizzardViewModel,
+//                context = context
+//            )
+//        }
         composable(
             route = Routes.ProfileScreen.route
         ) {
             ProfileScreen(
                 navController = navController,
                 userData = googleAuthUiClient.getSignInUser(),
-                viewModel = viewModel,
                 googleAuthUiClient = googleAuthUiClient,
-                context = context
+                context = context,
+                viewModel = signInViewModel
             )
         }
 //        composable(
