@@ -73,7 +73,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.7")
 
     //LiveData
-    implementation("androidx.compose.runtime:runtime-livedata:1.6.5")
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.6")
 
     //Retrofit2
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
@@ -88,7 +88,7 @@ dependencies {
     //Firebase
     implementation(platform("com.google.firebase:firebase-bom:32.8.1"))
     implementation("com.google.firebase:firebase-auth-ktx")
-    implementation("com.google.android.gms:play-services-auth:21.0.0")
+    implementation("com.google.android.gms:play-services-auth:21.1.0")
 
     //Profile picture remote load
     implementation("io.coil-kt:coil-compose:2.5.0")
