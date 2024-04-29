@@ -10,10 +10,12 @@ class SignInViewModel: ViewModel() {
     val state = _state.asStateFlow()
 
     fun onSignInResult(result: SignInResult) {
-        _state.update { it.copy(
-            isSignInSuccessful = result.data != null,
-            signInError = result.errorMessage
-        ) }
+        _state.update {
+            it.copy(
+                isSignInSuccessful = result.data != null,
+                signInError = result.errorMessage
+            )
+        }
     }
 
     fun resetState() {

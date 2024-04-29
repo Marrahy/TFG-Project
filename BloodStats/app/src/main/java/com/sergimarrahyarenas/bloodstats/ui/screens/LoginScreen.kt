@@ -6,7 +6,6 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,16 +22,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.sergimarrahyarenas.api.viewmodel.BlizzardViewModel
-import com.sergimarrahyarenas.bloodstats.R
-import com.sergimarrahyarenas.core.sign_in.GoogleAuthUiClient
-import com.sergimarrahyarenas.core.sign_in.SignInViewModel
+import com.sergimarrahyarenas.core.presentation.sign_in.GoogleAuthUiClient
 import kotlinx.coroutines.launch
 
 @Composable
@@ -40,7 +33,7 @@ fun LoginScreen(
     navController: NavController,
     googleAuthUiClient: GoogleAuthUiClient,
     context: Context,
-    viewModel: SignInViewModel
+    viewModel: com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.SignInViewModel
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val launcher = rememberLauncherForActivityResult(
@@ -98,7 +91,7 @@ fun LoginScreen(
             mutableStateOf("")
         }
 
-        Image(painter = painterResource(id = R.drawable.dogo), contentDescription = "GoodBoy")
+        //Image(painter = painterResource(id = R.drawable.dogo), contentDescription = "GoodBoy")
 
 
         OutlinedTextField(
