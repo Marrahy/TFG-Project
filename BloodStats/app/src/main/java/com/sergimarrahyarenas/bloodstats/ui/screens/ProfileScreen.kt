@@ -23,8 +23,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.SignInViewModel
 import com.sergimarrahyarenas.core.presentation.sign_in.GoogleAuthUiClient
-import com.sergimarrahyarenas.core.presentation.sign_in.SignInViewModel
 import com.sergimarrahyarenas.core.presentation.sign_in.UserData
 import kotlinx.coroutines.launch
 
@@ -32,9 +32,9 @@ import kotlinx.coroutines.launch
 fun ProfileScreen(
     navController: NavController,
     userData: UserData?,
-    viewModel: SignInViewModel,
     googleAuthUiClient: GoogleAuthUiClient,
-    context: Context
+    context: Context,
+    viewModel: SignInViewModel
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
