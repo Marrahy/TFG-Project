@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.GoogleViewModel
 import com.sergimarrahyarenas.core.presentation.sign_in.GoogleAuthUiClient
 import kotlinx.coroutines.launch
 
@@ -33,7 +34,7 @@ fun LoginScreen(
     navController: NavController,
     googleAuthUiClient: GoogleAuthUiClient,
     context: Context,
-    viewModel: com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.SignInViewModel
+    viewModel: GoogleViewModel
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val launcher = rememberLauncherForActivityResult(

@@ -3,6 +3,7 @@ package com.sergimarrahyarenas.bloodstats.ui.screens
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,7 +27,8 @@ import com.sergimarrahyarenas.api.viewmodel.BlizzardViewModel
 
 @Composable
 fun MainScreen(blizzardViewModel: BlizzardViewModel) {
-    val characterInfo by blizzardViewModel.characterStatistics.observeAsState()
+    val characterInfo by blizzardViewModel.characterData.observeAsState()
+
     var entityNameInput by remember {
         mutableStateOf("")
     }
@@ -65,12 +67,15 @@ fun MainScreen(blizzardViewModel: BlizzardViewModel) {
         }
         Button(
             onClick = {
-                blizzardViewModel.loadCharacterStatistics(entityNameInput, realm)
+                blizzardViewModel.loadBossData()
+                blizzardViewModel.loadCharacterData(entityNameInput, realm)
+                Log.d("Nombre: ", entityNameInput)
             }
         ) {
             Text(text = "Get Stats")
         }
-        Text(text = """Character stats: ${characterInfo?.character?.name}""")
+
+        Text(text = """Character stats: ${characterInfo?.name}""")
     }
 }
 

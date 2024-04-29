@@ -7,7 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.auth.api.identity.Identity
 import com.sergimarrahyarenas.api.viewmodel.BlizzardViewModel
-import com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.SignInViewModel
+import com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.GoogleViewModel
 import com.sergimarrahyarenas.bloodstats.ui.screens.LoginScreen
 import com.sergimarrahyarenas.bloodstats.ui.screens.MainScreen
 import com.sergimarrahyarenas.bloodstats.ui.screens.ProfileScreen
@@ -18,7 +18,7 @@ import com.sergimarrahyarenas.core.presentation.sign_in.GoogleAuthUiClient
 fun Navigation(
     context: Context,
     blizzardViewModel: BlizzardViewModel,
-    signInViewModel: SignInViewModel
+    googleViewModel: GoogleViewModel
 ) {
     val navController = rememberNavController()
     val googleAuthUiClient by lazy {
@@ -45,7 +45,7 @@ fun Navigation(
                 navController = navController,
                 googleAuthUiClient = googleAuthUiClient,
                 context = context,
-                viewModel = signInViewModel
+                viewModel = googleViewModel
             )
         }
 //        composable(
@@ -68,7 +68,7 @@ fun Navigation(
                 userData = googleAuthUiClient.getSignInUser(),
                 googleAuthUiClient = googleAuthUiClient,
                 context = context,
-                viewModel = signInViewModel
+                viewModel = googleViewModel
             )
         }
 //        composable(
