@@ -25,8 +25,9 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.sergimarrahyarenas.bloodstats.common.CustomScaffold
+import com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.GoogleAuthUiClient
 import com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.GoogleViewModel
-import com.sergimarrahyarenas.core.presentation.sign_in.GoogleAuthUiClient
 import kotlinx.coroutines.launch
 
 @Composable
@@ -34,8 +35,9 @@ fun LoginScreen(
     navController: NavController,
     googleAuthUiClient: GoogleAuthUiClient,
     context: Context,
-    viewModel: GoogleViewModel
+    viewModel: GoogleViewModel,
 ) {
+    val customScaffold = CustomScaffold()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
@@ -93,7 +95,6 @@ fun LoginScreen(
         }
 
         //Image(painter = painterResource(id = R.drawable.dogo), contentDescription = "GoodBoy")
-
 
         OutlinedTextField(
             value = userName,

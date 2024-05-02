@@ -1,7 +1,6 @@
 package com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in
 
 import androidx.lifecycle.ViewModel
-import com.sergimarrahyarenas.core.presentation.sign_in.SignInResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

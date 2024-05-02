@@ -1,15 +1,17 @@
 package com.sergimarrahyarenas.bloodstats.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavController
+import com.sergimarrahyarenas.bloodstats.api.viewmodel.BlizzardViewModel
 import com.sergimarrahyarenas.bloodstats.navigation.Routes
 import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreen(navController: NavController) {
+fun SplashScreen(navController: NavController, blizzardViewModel: BlizzardViewModel) {
     LaunchedEffect(key1 = true) {
         delay(3000)
         navController.popBackStack()

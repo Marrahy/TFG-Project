@@ -6,27 +6,28 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.auth.api.identity.Identity
-import com.sergimarrahyarenas.api.viewmodel.BlizzardViewModel
+import com.sergimarrahyarenas.bloodstats.api.viewmodel.BlizzardViewModel
+import com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.GoogleAuthUiClient
 import com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.GoogleViewModel
 import com.sergimarrahyarenas.bloodstats.ui.screens.LoginScreen
 import com.sergimarrahyarenas.bloodstats.ui.screens.MainScreen
 import com.sergimarrahyarenas.bloodstats.ui.screens.ProfileScreen
 import com.sergimarrahyarenas.bloodstats.ui.screens.SplashScreen
-import com.sergimarrahyarenas.core.presentation.sign_in.GoogleAuthUiClient
 
 @Composable
-fun Navigation(
-    context: Context,
-    blizzardViewModel: BlizzardViewModel,
-    googleViewModel: GoogleViewModel
-) {
+fun Navigation(context: Context) {
     val navController = rememberNavController()
+
     val googleAuthUiClient by lazy {
         GoogleAuthUiClient(
             context = context,
             oneTapClient = Identity.getSignInClient(context)
         )
     }
+
+    val blizzardViewModel = BlizzardViewModel()
+    val googleViewModel = GoogleViewModel()
+
 
     NavHost(
         navController = navController,
@@ -36,7 +37,10 @@ fun Navigation(
         composable(
             route = Routes.SplashScreen.route
         ) {
-            SplashScreen(navController = navController)
+            SplashScreen(
+                navController = navController,
+                blizzardViewModel = blizzardViewModel
+            )
         }
         composable(
             route = Routes.LoginScreen.route
