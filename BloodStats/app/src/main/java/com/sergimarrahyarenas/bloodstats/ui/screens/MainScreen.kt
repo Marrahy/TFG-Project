@@ -1,10 +1,9 @@
 package com.sergimarrahyarenas.bloodstats.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -19,15 +18,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.sergimarrahyarenas.bloodstats.api.viewmodel.BlizzardViewModel
+import com.sergimarrahyarenas.bloodstats.models.itemdata.ItemData
+import com.sergimarrahyarenas.bloodstats.models.itemmedia.ItemMedia
 
 @Composable
-fun MainScreen(blizzardViewModel: BlizzardViewModel) {
-    val characterInfo by blizzardViewModel.characterData.observeAsState()
-    val accessToken by blizzardViewModel.accessToken.observeAsState()
+fun MainScreen(
+    blizzardViewModel: BlizzardViewModel,
+    navController: NavController
+) {
+    val isLoading: Boolean by blizzardViewModel.isLoading.observeAsState(initial = false)
+    val responseError: Boolean by blizzardViewModel.responseError.observeAsState(initial = false)
 
-    var entityNameInput by remember {
+    var searchedEntity by remember {
         mutableStateOf("")
     }
     var realm by remember {
@@ -46,35 +52,69 @@ fun MainScreen(blizzardViewModel: BlizzardViewModel) {
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            OutlinedTextField(
-                value = entityNameInput,
-                onValueChange = {
-                    entityNameInput = it
+            SearchBox(
+                modifier = Modifier.weight(1f),
+                searchedEntity = searchedEntity,
+                realm = realm,
+                onValueChange = { searchedEntity = it },
+                onClickPress = {
+                    blizzardViewModel.loadCharacterDataAndMedia(searchedEntity, realm)
+                    blizzardViewModel.loadItemDataAndMedia(searchedEntity)
                 }
             )
-            Spacer(
-                modifier = Modifier
-                .padding(16.dp)
+        }
+
+        Box(modifier = Modifier.weight(8f)) {
+            if (isLoading) {
+                navController.navigate("loading_screen")
+            } else if (responseError) {
+                Text(text = "\"$searchedEntity\" no coincide con ninguna busqueda")
+            }
+        }
+    }
+}
+
+@Composable
+fun SearchBox(
+    modifier: Modifier = Modifier,
+    searchedEntity: String,
+    realm: String = "",
+    onValueChange: (String) -> Unit,
+    onClickPress: () -> Unit,
+) {
+    val focusManager = LocalFocusManager.current
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .padding(bottom = 8.dp)
+                .then(modifier)
+        ) {
+            OutlinedTextField(
+                value = searchedEntity,
+                onValueChange = { onValueChange(it) },
+                modifier = Modifier.weight(3f)
             )
             OutlinedTextField(
                 value = realm,
-                onValueChange = {
-                    realm = it
-                }
+                onValueChange = { onValueChange(it) }
             )
         }
         Button(
             onClick = {
-                blizzardViewModel.loadCharacterData(entityNameInput, realm)
-            }
+                onClickPress()
+                focusManager.clearFocus()
+            },
+            modifier = Modifier.weight(1f)
         ) {
-            Text(text = "Get Stats")
+            Text(text = "Buscar")
         }
-        
-        Text(text = "$accessToken")
-
-        Text(text = """Character name: ${characterInfo?.name}
-            |Character realm: ${characterInfo?.realm?.name}
-        """.trimMargin())
     }
 }

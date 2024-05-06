@@ -9,6 +9,8 @@ import com.google.android.gms.auth.api.identity.Identity
 import com.sergimarrahyarenas.bloodstats.api.viewmodel.BlizzardViewModel
 import com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.GoogleAuthUiClient
 import com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.GoogleViewModel
+import com.sergimarrahyarenas.bloodstats.ui.screens.CharacterScreen
+import com.sergimarrahyarenas.bloodstats.ui.screens.LoadingScreen
 import com.sergimarrahyarenas.bloodstats.ui.screens.LoginScreen
 import com.sergimarrahyarenas.bloodstats.ui.screens.MainScreen
 import com.sergimarrahyarenas.bloodstats.ui.screens.ProfileScreen
@@ -61,7 +63,15 @@ fun Navigation(context: Context) {
             route = Routes.MainScreen.route
         ) {
             MainScreen(
-                blizzardViewModel = blizzardViewModel
+                blizzardViewModel = blizzardViewModel,
+                navController = navController
+            )
+        }
+        composable(
+            route = Routes.LoadingScreen.route
+        ) {
+            LoadingScreen(
+                navController = navController
             )
         }
         composable(
@@ -75,11 +85,14 @@ fun Navigation(context: Context) {
                 viewModel = googleViewModel
             )
         }
-//        composable(
-//            route = Routes.CharacterGeneralInfoScreen.route
-//        ) {
-//            CharacterGeneralInfoScreen(navController = navController)
-//        }
+        composable(
+            route = Routes.CharacterScreen.route
+        ) {
+            CharacterScreen(
+                blizzardViewModel = blizzardViewModel,
+                navController = navController
+            )
+        }
 //        composable(
 //            route = Routes.CharacterStatsScreen.route
 //        ) {
