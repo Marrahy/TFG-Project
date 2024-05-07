@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -22,8 +21,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.sergimarrahyarenas.bloodstats.api.viewmodel.BlizzardViewModel
-import com.sergimarrahyarenas.bloodstats.models.itemdata.ItemData
-import com.sergimarrahyarenas.bloodstats.models.itemmedia.ItemMedia
 
 @Composable
 fun MainScreen(
@@ -39,37 +36,26 @@ fun MainScreen(
     var realm by remember {
         mutableStateOf("")
     }
-
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            SearchBox(
-                modifier = Modifier.weight(1f),
-                searchedEntity = searchedEntity,
-                realm = realm,
-                onValueChange = { searchedEntity = it },
-                onClickPress = {
-                    blizzardViewModel.loadCharacterDataAndMedia(searchedEntity, realm)
-                    blizzardViewModel.loadItemDataAndMedia(searchedEntity)
-                }
-            )
-        }
-
-        Box(modifier = Modifier.weight(8f)) {
-            if (isLoading) {
-                navController.navigate("loading_screen")
-            } else if (responseError) {
-                Text(text = "\"$searchedEntity\" no coincide con ninguna busqueda")
+    SearchBox(
+        searchedEntity = searchedEntity,
+        realm = realm,
+        onNameChange = { searchedEntity = it },
+        onRealmChange = {
+            if (it != null) {
+                realm = it
             }
+        },
+        onClickPress = {
+            blizzardViewModel.loadCharacterDataAndMedia(searchedEntity, realm)
+            navController.navigate("character_screen")
+        }
+    )
+
+    Box {
+        if (isLoading) {
+            navController.navigate("loading_screen")
+        } else if (responseError) {
+            Text(text = "\"$searchedEntity\" no coincide con ninguna busqueda")
         }
     }
 }
@@ -79,7 +65,8 @@ fun SearchBox(
     modifier: Modifier = Modifier,
     searchedEntity: String,
     realm: String = "",
-    onValueChange: (String) -> Unit,
+    onNameChange: (String) -> Unit,
+    onRealmChange: (String?) -> Unit,
     onClickPress: () -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
@@ -98,13 +85,14 @@ fun SearchBox(
                 .then(modifier)
         ) {
             OutlinedTextField(
+                label = { Text(text = "Nombre") },
                 value = searchedEntity,
-                onValueChange = { onValueChange(it) },
-                modifier = Modifier.weight(3f)
+                onValueChange = { onNameChange(it) },
             )
             OutlinedTextField(
+                label = { Text(text = "Servidor") },
                 value = realm,
-                onValueChange = { onValueChange(it) }
+                onValueChange = { onRealmChange(it) }
             )
         }
         Button(
@@ -112,7 +100,7 @@ fun SearchBox(
                 onClickPress()
                 focusManager.clearFocus()
             },
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.padding(16.dp)
         ) {
             Text(text = "Buscar")
         }

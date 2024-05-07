@@ -7,6 +7,8 @@ object Constants {
     const val BASE_ACCESS_TOKEN_URL = "https://oauth.battle.net/"
     const val BASE_PROFILE_URL = "https://eu.api.blizzard.com/profile/wow/"
     const val BASE_GAME_DATA_URL = "https://eu.api.blizzard.com/data/wow/search/"
+    const val CHARACTER_MEDIA = "character-media"
+    const val ITEM_MEDIA = "item-media"
     const val GRANT_TYPE = "client_credentials"
     const val NAMESPACE = "profile-eu"
     const val STATIC_NAMESPACE = "namespace=static-eu"

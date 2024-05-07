@@ -90,7 +90,7 @@ fun Navigation(context: Context) {
         ) {
             CharacterScreen(
                 blizzardViewModel = blizzardViewModel,
-                navController = navController
+                navController = navController,
             )
         }
 //        composable(

@@ -81,6 +81,9 @@ dependencies {
     //Serialize
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
 
+    //Download Image
+    implementation("com.squareup.picasso:picasso:2.71828")
+
     //LifeCycle
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")

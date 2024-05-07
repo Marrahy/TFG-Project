@@ -6,10 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sergimarrahyarenas.bloodstats.api.RetrofitApiClient
 import com.sergimarrahyarenas.bloodstats.models.characterdata.CharacterData
+import com.sergimarrahyarenas.bloodstats.models.charactermedia.CharacterMedia
 import com.sergimarrahyarenas.bloodstats.models.itemdata.ItemData
 import com.sergimarrahyarenas.bloodstats.models.itemmedia.ItemMedia
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class BlizzardViewModel: ViewModel() {
@@ -28,14 +28,14 @@ class BlizzardViewModel: ViewModel() {
     private val _characterData = MutableLiveData<CharacterData?>()
     val characterData: LiveData<CharacterData?> = _characterData
 
-    private val _mediaCharacter = MutableLiveData<String?>()
-    val mediaCharacter: LiveData<String?> = _mediaCharacter
+    private val _characterMedia = MutableLiveData<CharacterMedia?>()
+    val characterMedia: LiveData<CharacterMedia?> = _characterMedia
 
     private val _itemData = MutableLiveData<List<ItemData?>>()
     val itemData: LiveData<List<ItemData?>> = _itemData
 
-    private val _itemMedia = MutableLiveData<String?>()
-    val itemMedia: LiveData<String?> = _itemMedia
+    private val _itemMedia = MutableLiveData<ItemMedia?>()
+    val itemMedia: LiveData<ItemMedia?> = _itemMedia
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -47,9 +47,8 @@ class BlizzardViewModel: ViewModel() {
 
     fun loadCharacterDataAndMedia(name: String, realm: String?) {
         viewModelScope.launch(Dispatchers.IO) {
-            _isLoading.postValue(true)
-            delay(2000)
             try {
+                _isLoading.postValue(true)
                 _characterData.postValue(
                     accessTokenService.getCharacterData(
                         accessToken = accessToken.value!!,
@@ -58,18 +57,18 @@ class BlizzardViewModel: ViewModel() {
                     )
                 )
 
-                _mediaCharacter.postValue(
+                _characterMedia.postValue(
                     accessTokenService.getCharacterMedia(
                         accessToken = accessToken.value!!,
                         name = name,
                         realm = realm
-                    )?.assets?.get(1)?.value
+                    )
                 )
+                _isLoading.postValue(false)
                 _responseError.postValue(false)
             } catch (e: Exception) {
                 _responseError.postValue(true)
             }
-            _isLoading.postValue(false)
         }
     }
 
@@ -90,7 +89,7 @@ class BlizzardViewModel: ViewModel() {
                         accessTokenService.getItemMedia(
                             accessToken = accessToken.value!!,
                             itemId = it
-                        )?.assets?.get(0)?.value
+                        )
                     }
                 )
                 _responseError.postValue(false)

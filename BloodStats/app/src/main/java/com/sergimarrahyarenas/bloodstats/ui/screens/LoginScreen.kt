@@ -37,7 +37,7 @@ fun LoginScreen(
     context: Context,
     viewModel: GoogleViewModel,
 ) {
-    val customScaffold = CustomScaffold()
+    val customScaffold = CustomScaffold(navController, googleAuthUiClient)
     val state by viewModel.state.collectAsStateWithLifecycle()
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),

@@ -1,6 +1,8 @@
 package com.sergimarrahyarenas.bloodstats.api
 
+import com.sergimarrahyarenas.bloodstats.api.Constants.CHARACTER_MEDIA
 import com.sergimarrahyarenas.bloodstats.api.Constants.GRANT_TYPE
+import com.sergimarrahyarenas.bloodstats.api.Constants.ITEM_MEDIA
 import com.sergimarrahyarenas.bloodstats.api.Constants.LOCALE_ES
 import com.sergimarrahyarenas.bloodstats.api.Constants.NAMESPACE
 import com.sergimarrahyarenas.bloodstats.api.Constants.STATIC_NAMESPACE
@@ -35,19 +37,21 @@ interface BlizzardApiService {
         @Query("locale") locale: String = LOCALE_ES
     ): Response<CharacterData>
 
-    @GET("character/{realm}/{name}")
+    @GET("character/{realm}/{name}/{character-media}")
     suspend fun getCharacterMedia(
         @Header("Authorization") accessToken: String,
         @Path("name") characterName: String,
         @Path("realm") realm: String?,
+        @Path("character-media") characterMedia: String = CHARACTER_MEDIA,
         @Query("namespace") namespace: String = NAMESPACE,
         @Query("locale") locale: String = LOCALE_ES
     ): Response<CharacterMedia>
 
-    @GET("item?$STATIC_NAMESPACE")
+    @GET("item")
     suspend fun getItemData(
         @Header("Authorization") accessToken: String,
         @Query("name.en_US") itemName: String,
+        @Query("namespace") nameSpace: String = STATIC_NAMESPACE,
         @Query("_page") pageNumber: Int = 1,
         @Query("orderby") orderBy: String = "id"
     ): Response<ItemData>
@@ -56,6 +60,7 @@ interface BlizzardApiService {
     suspend fun getItemMedia(
         @Header("Authorization") accessToken: String,
         @Path("itemId") itemId: Int,
+        @Path("item-media") itemMedia: String = ITEM_MEDIA,
         @Query("namespace") namespace: String = STATIC_NAMESPACE
     ): Response<ItemMedia>
 }
