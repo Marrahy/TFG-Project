@@ -2,7 +2,7 @@ package com.sergimarrahyarenas.bloodstats.api
 
 import android.util.Log
 import com.sergimarrahyarenas.bloodstats.api.Constants.BASE_ACCESS_TOKEN_URL
-import com.sergimarrahyarenas.bloodstats.api.Constants.BASE_GAME_DATA_URL
+import com.sergimarrahyarenas.bloodstats.api.Constants.BASE_DATA_URL
 import com.sergimarrahyarenas.bloodstats.api.Constants.BASE_PROFILE_URL
 import com.sergimarrahyarenas.bloodstats.api.Constants.BEARER
 import com.sergimarrahyarenas.bloodstats.api.Constants.CLIENT_ID
@@ -43,7 +43,7 @@ object RetrofitInstance {
     }.await()
 
     suspend fun getCharacterData(accessToken: String, name: String, realm: String?): CharacterData? = CoroutineScope(Dispatchers.IO).async {
-        val response = retrofit(BASE_PROFILE_URL).getCharacterData(accessToken = "$BEARER $accessToken", characterName = name, realm = realm)
+        val response = retrofit(BASE_PROFILE_URL).getCharacterProfileSummary(accessToken = "$BEARER $accessToken", characterName = name, realm = realm)
         Log.d("RESPONSE getCharacterData: ", "$response")
         if (response.isSuccessful) {
             response.body()
@@ -63,7 +63,7 @@ object RetrofitInstance {
     }.await()
 
     suspend fun getItemData(accessToken: String, name: String): ItemData? = CoroutineScope(Dispatchers.IO).async {
-        val response = retrofit(BASE_GAME_DATA_URL).getItemData(accessToken = "$BEARER $accessToken", itemName = name)
+        val response = retrofit(BASE_DATA_URL).getItemData(accessToken = "$BEARER $accessToken", itemName = name)
         Log.d("RESPONSE getGearData: ", "$response")
         if (response.isSuccessful) {
             response.body()
@@ -73,7 +73,7 @@ object RetrofitInstance {
     }.await()
 
     suspend fun getItemMedia(accessToken: String, itemId: Int): ItemMedia? = CoroutineScope(Dispatchers.IO).async {
-        val response = retrofit(BASE_GAME_DATA_URL).getItemMedia(accessToken = "$BEARER $accessToken", itemId = itemId)
+        val response = retrofit(BASE_DATA_URL).getItemMedia(accessToken = "$BEARER $accessToken", itemId = itemId)
         Log.d("RESPONSE getItemMedia: ", "$response")
         if (response.isSuccessful) {
             response.body()

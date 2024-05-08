@@ -47,28 +47,21 @@ class BlizzardViewModel: ViewModel() {
 
     fun loadCharacterDataAndMedia(name: String, realm: String?) {
         viewModelScope.launch(Dispatchers.IO) {
-            try {
-                _isLoading.postValue(true)
-                _characterData.postValue(
-                    accessTokenService.getCharacterData(
-                        accessToken = accessToken.value!!,
-                        name = name,
-                        realm = realm
-                    )
+            _characterData.postValue(
+                accessTokenService.getCharacterData(
+                    accessToken = accessToken.value!!,
+                    name = name,
+                    realm = realm
                 )
+            )
 
-                _characterMedia.postValue(
-                    accessTokenService.getCharacterMedia(
-                        accessToken = accessToken.value!!,
-                        name = name,
-                        realm = realm
-                    )
+            _characterMedia.postValue(
+                accessTokenService.getCharacterMedia(
+                    accessToken = accessToken.value!!,
+                    name = name,
+                    realm = realm
                 )
-                _isLoading.postValue(false)
-                _responseError.postValue(false)
-            } catch (e: Exception) {
-                _responseError.postValue(true)
-            }
+            )
         }
     }
 
