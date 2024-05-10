@@ -5,8 +5,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sergimarrahyarenas.bloodstats.api.RetrofitApiClient
-import com.sergimarrahyarenas.bloodstats.models.characterdata.CharacterData
+import com.sergimarrahyarenas.bloodstats.data.Character
+import com.sergimarrahyarenas.bloodstats.models.characterequipment.CharacterEquipment
 import com.sergimarrahyarenas.bloodstats.models.charactermedia.CharacterMedia
+import com.sergimarrahyarenas.bloodstats.models.characterprofilesummary.CharacterProfileSummary
+import com.sergimarrahyarenas.bloodstats.models.characterspecialization.CharacterSpecialization
+import com.sergimarrahyarenas.bloodstats.models.characterstatistics.CharacterStatistics
 import com.sergimarrahyarenas.bloodstats.models.itemdata.ItemData
 import com.sergimarrahyarenas.bloodstats.models.itemmedia.ItemMedia
 import kotlinx.coroutines.Dispatchers
@@ -25,14 +29,29 @@ class BlizzardViewModel: ViewModel() {
     private val _accessToken = MutableLiveData<String?>()
     val accessToken: LiveData<String?> = _accessToken
 
-    private val _characterData = MutableLiveData<CharacterData?>()
-    val characterData: LiveData<CharacterData?> = _characterData
+    private val _characterProfileSummary = MutableLiveData<CharacterProfileSummary?>()
+    val characterProfileSummary: LiveData<CharacterProfileSummary?> = _characterProfileSummary
+
+    private val _characterEquipment = MutableLiveData<CharacterEquipment?>()
+    val characterEquipment: LiveData<CharacterEquipment?> = _characterEquipment
+
+    private val _characterStatistics = MutableLiveData<CharacterStatistics?>()
+    val characterStatistics: LiveData<CharacterStatistics?> = _characterStatistics
+
+    private val _characterSpecialization = MutableLiveData<CharacterSpecialization?>()
+    val characterSpecialization: LiveData<CharacterSpecialization?> = _characterSpecialization
+
+    private val _characterSpec = MutableLiveData<String?>()
+    val characterSpec: LiveData<String?> = _characterSpec
+
+    private val _itemData = MutableLiveData<ItemData?>()
+    val itemData: LiveData<ItemData?> = _itemData
 
     private val _characterMedia = MutableLiveData<CharacterMedia?>()
     val characterMedia: LiveData<CharacterMedia?> = _characterMedia
 
-    private val _itemData = MutableLiveData<List<ItemData?>>()
-    val itemData: LiveData<List<ItemData?>> = _itemData
+    private val _characterEquipmentMedia = MutableLiveData<String?>()
+    val characterEquipmentMedia: LiveData<String?> = _characterEquipmentMedia
 
     private val _itemMedia = MutableLiveData<ItemMedia?>()
     val itemMedia: LiveData<ItemMedia?> = _itemMedia
@@ -45,68 +64,93 @@ class BlizzardViewModel: ViewModel() {
         }
     }
 
-    fun loadCharacterDataAndMedia(name: String, realm: String?) {
+    fun loadCharacterStatistics(name: String, realm: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            _characterData.postValue(
-                accessTokenService.getCharacterData(
-                    accessToken = accessToken.value!!,
-                    name = name,
-                    realm = realm
+            _isLoading.postValue(true)
+            try {
+                _characterStatistics.postValue(
+                    accessTokenService.getCharacterStatisticsSummary(
+                        accessToken = accessToken.value!!,
+                        name = name,
+                        realm = realm
+                    )
                 )
-            )
 
-            _characterMedia.postValue(
-                accessTokenService.getCharacterMedia(
-                    accessToken = accessToken.value!!,
-                    name = name,
-                    realm = realm
-                )
-            )
+                _responseError.postValue(false)
+            } catch (e: Exception) {
+                _responseError.postValue(true)
+            }
+            _isLoading.postValue(false)
         }
+    }
+
+    fun loadCharacterProfileSummaryEquipmentMedia(name: String, realm: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _isLoading.postValue(true)
+            try {
+                _characterProfileSummary.postValue(
+                    accessTokenService.getCharacterProfileSummary(
+                        accessToken = accessToken.value!!,
+                        name = name,
+                        realm = realm
+                    )
+                )
+
+                _characterEquipment.postValue(
+                    accessTokenService.getCharacterEquipment(
+                        accessToken = accessToken.value!!,
+                        name = name,
+                        realm = realm
+                    )
+                )
+
+                _characterMedia.postValue(
+                    accessTokenService.getCharacterMedia(
+                        accessToken = accessToken.value!!,
+                        name = name,
+                        realm = realm
+                    )
+                )
+
+//                _characterEquipmentMedia.postValue(
+//                    accessTokenService.getItemMedia(
+//                        accessToken = accessToken.value!!,
+//                        itemId =
+//                    )
+//                )
+
+
+                getPrimaryAttribute()
+            _responseError.postValue(false)
+        } catch (e: Exception) {
+            _responseError.postValue(true)
+        }
+            _isLoading.postValue(false)
+        }
+    }
+
+    private fun getPrimaryAttribute() {
+        val characterClass = _characterProfileSummary.value?.character_class?.name
+        val characterSpec = _characterProfileSummary.value?.active_spec?.name
+
+        val spec = Character.Resources.getAttribute(Character(characterClass, characterSpec))
+        return _characterSpec.postValue(spec)
     }
 
     fun loadItemDataAndMedia(name: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _itemData.postValue(
-                    listOf(
-                        accessTokenService.getItemData(
-                            accessToken = accessToken.value!!,
-                            name = name
-                        )
+                    accessTokenService.getItemData(
+                        accessToken = accessToken.value!!,
+                        name = name
                     )
                 )
 
-                _itemMedia.postValue(
-                    itemData.value?.get(0)?.results?.get(0)?.data?.media?.id?.let {
-                        accessTokenService.getItemMedia(
-                            accessToken = accessToken.value!!,
-                            itemId = it
-                        )
-                    }
-                )
                 _responseError.postValue(false)
             } catch (e: Exception) {
                 _responseError.postValue(true)
             }
         }
     }
-
-//    fun getItemNames(json: String): List<String> {
-//        val itemsName = mutableListOf<String>()
-//        val jsonObject = JSONObject(json)
-//        val resultsArray = jsonObject.getJSONArray("results")
-//
-//        for (i in 0 until resultsArray.length()) {
-//            val itemObject = resultsArray.getJSONObject(i)
-//            val dataObject = itemObject.getJSONObject("data")
-//            val itemName = dataObject.getJSONObject("name").optString("en_US")
-//            if (itemName.isNotEmpty()) {
-//                _gearData.postValue(
-//                    itemsName.add(itemName)
-//                )
-//            }
-//        }
-//        return itemsName
-//    }
 }

@@ -26,8 +26,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.sergimarrahyarenas.bloodstats.common.CustomScaffold
+import com.sergimarrahyarenas.bloodstats.navigation.Routes
 import com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.GoogleAuthUiClient
 import com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.GoogleViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -36,107 +38,114 @@ fun LoginScreen(
     googleAuthUiClient: GoogleAuthUiClient,
     context: Context,
     viewModel: GoogleViewModel,
+    coroutineScope: CoroutineScope
 ) {
-    val customScaffold = CustomScaffold(navController, googleAuthUiClient)
-    val state by viewModel.state.collectAsStateWithLifecycle()
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartIntentSenderForResult(),
-        onResult = { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                viewModel.viewModelScope.launch {
-                    val signInResult = googleAuthUiClient.signInWithIntent(
-                        intent = result.data ?: return@launch
-                    )
-                    viewModel.onSignInResult(signInResult)
+    CustomScaffold(
+        navController = navController,
+        googleAuthUiClient = googleAuthUiClient,
+        coroutineScope = coroutineScope,
+        content = {
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            val launcher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.StartIntentSenderForResult(),
+                onResult = { result ->
+                    if (result.resultCode == Activity.RESULT_OK) {
+                        viewModel.viewModelScope.launch {
+                            val signInResult = googleAuthUiClient.signInWithIntent(
+                                intent = result.data ?: return@launch
+                            )
+                            viewModel.onSignInResult(signInResult)
+                        }
+                    }
+                }
+            )
+
+            LaunchedEffect(key1 = state.isSignInSuccessful) {
+                if (state.isSignInSuccessful) {
+                    Toast.makeText(
+                        context,
+                        "Sign in successful",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    navController.navigate(route = Routes.SearchScreen.route)
+                    viewModel.resetState()
+                }
+            }
+
+            LaunchedEffect(key1 = state.signInError) {
+                state.signInError?.let { error ->
+                    Toast.makeText(
+                        context,
+                        error,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+
+            LaunchedEffect(key1 = Unit) {
+                if (googleAuthUiClient.getSignInUser() != null) {
+                    navController.navigate(route = Routes.SearchScreen.route)
+                }
+            }
+
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                var userName by rememberSaveable() {
+                    mutableStateOf("")
+                }
+                var userPassword by rememberSaveable() {
+                    mutableStateOf("")
+                }
+
+                //Image(painter = painterResource(id = R.drawable.dogo), contentDescription = "GoodBoy")
+
+                OutlinedTextField(
+                    value = userName,
+                    onValueChange = { userName = it },
+                    label = { Text(text = "User Name") },
+                    singleLine = true
+                )
+
+                OutlinedTextField(
+                    value = userPassword,
+                    onValueChange = { userPassword = it },
+                    label = { Text(text = "Password") },
+                    singleLine = true
+                )
+
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Button(
+                        onClick = {
+                            viewModel.viewModelScope.launch {
+                                val signInIntentSender = googleAuthUiClient.signIn()
+                                launcher.launch(
+                                    IntentSenderRequest.Builder(
+                                        signInIntentSender ?: return@launch
+                                    ).build()
+                                )
+                            }
+                        },
+                    ) {
+                        Text(text = "Sign in")
+                    }
+
+                    Button(
+                        onClick = {
+                            navController.navigate(route = Routes.SearchScreen.route)
+                        },
+                    ) {
+                        Text(text = "Get Token")
+                    }
                 }
             }
         }
     )
-
-    LaunchedEffect(key1 = state.isSignInSuccessful) {
-        if (state.isSignInSuccessful) {
-            Toast.makeText(
-                context,
-                "Sign in successful",
-                Toast.LENGTH_LONG
-            ).show()
-
-            navController.navigate("profile_screen")
-            viewModel.resetState()
-        }
-    }
-
-    LaunchedEffect(key1 = state.signInError) {
-        state.signInError?.let { error ->
-            Toast.makeText(
-                context,
-                error,
-                Toast.LENGTH_LONG
-            ).show()
-        }
-    }
-
-    LaunchedEffect(key1 = Unit) {
-        if (googleAuthUiClient.getSignInUser() != null) {
-            navController.navigate("profile_screen")
-        }
-    }
-
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        var userName by rememberSaveable() {
-            mutableStateOf("")
-        }
-        var userPassword by rememberSaveable() {
-            mutableStateOf("")
-        }
-
-        //Image(painter = painterResource(id = R.drawable.dogo), contentDescription = "GoodBoy")
-
-        OutlinedTextField(
-            value = userName,
-            onValueChange = { userName = it },
-            label = { Text(text = "User Name") },
-            singleLine = true
-        )
-
-        OutlinedTextField(
-            value = userPassword,
-            onValueChange = { userPassword = it },
-            label = { Text(text = "Password") },
-            singleLine = true
-        )
-
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Button(
-                onClick = {
-                    viewModel.viewModelScope.launch {
-                        val signInIntentSender = googleAuthUiClient.signIn()
-                        launcher.launch(
-                            IntentSenderRequest.Builder(
-                                signInIntentSender ?: return@launch
-                            ).build()
-                        )
-                    }
-                },
-            ) {
-                Text(text = "Sign in")
-            }
-
-            Button(
-                onClick = {
-                    navController.navigate("main_screen")
-                },
-            ) {
-                Text(text = "Get Token")
-            }
-        }
-    }
 }

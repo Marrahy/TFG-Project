@@ -9,17 +9,28 @@ import com.google.android.gms.auth.api.identity.Identity
 import com.sergimarrahyarenas.bloodstats.api.viewmodel.BlizzardViewModel
 import com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.GoogleAuthUiClient
 import com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.GoogleViewModel
-import com.sergimarrahyarenas.bloodstats.ui.screens.CharacterScreen
+import com.sergimarrahyarenas.bloodstats.ui.screens.CharacterDungeonsScreen
+import com.sergimarrahyarenas.bloodstats.ui.screens.CharacterEquipmentScreen
+import com.sergimarrahyarenas.bloodstats.ui.screens.CharacterGuildScreen
+import com.sergimarrahyarenas.bloodstats.ui.screens.CharacterSpecializationScreen
+import com.sergimarrahyarenas.bloodstats.ui.screens.CharacterStatisticsScreen
+import com.sergimarrahyarenas.bloodstats.ui.screens.ItemDataScreen
 import com.sergimarrahyarenas.bloodstats.ui.screens.LoadingScreen
 import com.sergimarrahyarenas.bloodstats.ui.screens.LoginScreen
-import com.sergimarrahyarenas.bloodstats.ui.screens.MainScreen
+import com.sergimarrahyarenas.bloodstats.ui.screens.NpcDataScreen
+import com.sergimarrahyarenas.bloodstats.ui.screens.OptionsScreen
 import com.sergimarrahyarenas.bloodstats.ui.screens.ProfileScreen
+import com.sergimarrahyarenas.bloodstats.ui.screens.RegisterScreen
+import com.sergimarrahyarenas.bloodstats.ui.screens.SearchScreen
 import com.sergimarrahyarenas.bloodstats.ui.screens.SplashScreen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlin.coroutines.coroutineContext
 
 @Composable
 fun Navigation(context: Context) {
     val navController = rememberNavController()
-
+    val coroutineScope = CoroutineScope(Dispatchers.IO)
     val googleAuthUiClient by lazy {
         GoogleAuthUiClient(
             context = context,
@@ -30,6 +41,7 @@ fun Navigation(context: Context) {
     val blizzardViewModel = BlizzardViewModel()
     val googleViewModel = GoogleViewModel()
 
+    val route = ""
 
     NavHost(
         navController = navController,
@@ -41,7 +53,6 @@ fun Navigation(context: Context) {
         ) {
             SplashScreen(
                 navController = navController,
-                blizzardViewModel = blizzardViewModel
             )
         }
         composable(
@@ -51,18 +62,24 @@ fun Navigation(context: Context) {
                 navController = navController,
                 googleAuthUiClient = googleAuthUiClient,
                 context = context,
-                viewModel = googleViewModel
+                viewModel = googleViewModel,
+                coroutineScope = coroutineScope
             )
         }
-//        composable(
-//            route = Routes.RegisterScreen.route
-//        ) {
-//            RegisterScreen(navController = navController)
-//        }
         composable(
-            route = Routes.MainScreen.route
+            route = Routes.RegisterScreen.route
         ) {
-            MainScreen(
+            RegisterScreen(navController = navController)
+        }
+        composable(
+            route = Routes.OptionsScreen.route
+        ) {
+            OptionsScreen(navController = navController)
+        }
+        composable(
+            route = Routes.SearchScreen.route
+        ) {
+            SearchScreen(
                 blizzardViewModel = blizzardViewModel,
                 navController = navController
             )
@@ -70,9 +87,7 @@ fun Navigation(context: Context) {
         composable(
             route = Routes.LoadingScreen.route
         ) {
-            LoadingScreen(
-                navController = navController
-            )
+            LoadingScreen(navController = navController)
         }
         composable(
             route = Routes.ProfileScreen.route
@@ -86,52 +101,49 @@ fun Navigation(context: Context) {
             )
         }
         composable(
-            route = Routes.CharacterScreen.route
+            route = Routes.CharacterStatisticsScreen.route
         ) {
-            CharacterScreen(
+            CharacterStatisticsScreen(
                 blizzardViewModel = blizzardViewModel,
                 navController = navController,
+                googleAuthUiClient = googleAuthUiClient,
+                coroutineScope = coroutineScope
             )
         }
-//        composable(
-//            route = Routes.CharacterStatsScreen.route
-//        ) {
-//            CharacterStatsScreen(navController = navController)
-//        }
-//        composable(
-//            route = Routes.CharacterSkillTreeScreen.route
-//        ) {
-//            CharacterSkillTreeScreen(navController = navController)
-//        }
-//        composable(
-//            route = Routes.CharacterDungeonsScreen.route
-//        ) {
-//            CharacterDungeonsScreen(navController = navController)
-//        }
-//        composable(
-//            route = Routes.CharacterGuildScreen.route
-//        ) {
-//            CharacterGuildScreen(navController = navController)
-//        }
-//        composable(
-//            route = Routes.BuildPlannerScreen.route
-//        ) {
-//            BuildPlannerScreen(navController = navController)
-//        }
-//        composable(
-//            route = Routes.BossGeneralInfoScreen.route
-//        ) {
-//            BossGeneralInfoScreen(navController = navController)
-//        }
-//        composable(
-//            route = Routes.CreatureGeneralInfoScreen.route
-//        ) {
-//            CreatureGeneralInfoScreen(navController = navController)
-//        }
-//        composable(
-//            route = Routes.NpcGeneralInfoScreen.route
-//        ) {
-//            NpcGeneralInfoScreen(navController = navController)
-//        }
+        composable(
+            route = Routes.CharacterEquipmentScreen.route
+        ) {
+            CharacterEquipmentScreen(
+                blizzardViewModel = blizzardViewModel,
+                navController = navController,
+                googleAuthUiClient = googleAuthUiClient,
+                coroutineScope = coroutineScope
+            )
+        }
+        composable(
+            route = Routes.CharacterSpecializationScreen.route
+        ) {
+            CharacterSpecializationScreen(navController = navController)
+        }
+        composable(
+            route = Routes.CharacterDungeonsScreen.route
+        ) {
+            CharacterDungeonsScreen(navController = navController)
+        }
+        composable(
+            route = Routes.CharacterGuildScreen.route
+        ) {
+            CharacterGuildScreen(navController = navController)
+        }
+        composable(
+            route = Routes.ItemDataScreen.route
+        ) {
+            ItemDataScreen(navController = navController)
+        }
+        composable(
+            route = Routes.NpcDataScreen.route
+        ) {
+            NpcDataScreen(navController = navController)
+        }
     }
 }

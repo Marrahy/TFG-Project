@@ -16,9 +16,12 @@ import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,13 +31,13 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,10 +57,95 @@ import coil.compose.AsyncImage
 import com.sergimarrahyarenas.bloodstats.models.charactermedia.CharacterMedia
 import com.sergimarrahyarenas.bloodstats.models.itemdata.ItemData
 import com.sergimarrahyarenas.bloodstats.models.itemmedia.ItemMedia
+import com.sergimarrahyarenas.bloodstats.navigation.Routes
 import com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.GoogleAuthUiClient
-import com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.GoogleViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CustomScaffold(
+    content: @Composable () -> Unit,
+    navController: NavController,
+    googleAuthUiClient: GoogleAuthUiClient,
+    coroutineScope: CoroutineScope
+    ) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(text = "Título de la aplicación") },
+                navigationIcon = {
+                    var expanded by remember { mutableStateOf(false) }
+                    IconButton(
+                        onClick = {
+                            expanded = true
+                        }
+                    ) {
+                        Icon(imageVector = Icons.Default.MoreVert, contentDescription = "Menu")
+                    }
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = {
+                            expanded = false
+                        }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(text = "Perfil") },
+                            onClick = {
+                                navController.navigate(route = Routes.ProfileScreen.route)
+                            },
+                            trailingIcon = {
+                                Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Perfil")
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(text = "Buscar") },
+                            onClick = {
+                                navController.navigate(route = Routes.SearchScreen.route)
+                            },
+                            trailingIcon = {
+                                Icon(imageVector = Icons.Default.Search, contentDescription = "Buscar")
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(text = "Opciones") },
+                            onClick = {
+                                navController.navigate(route = Routes.OptionsScreen.route)
+                            },
+                            trailingIcon = {
+                                Icon(imageVector = Icons.Default.Settings, contentDescription = "Opciones")
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(text = "Cerrar sesión") },
+                            onClick = {
+                                coroutineScope.launch(Dispatchers.IO) {
+                                    googleAuthUiClient.signOut()
+                                }
+                                navController.navigate(route = Routes.LoginScreen.route)
+                            },
+                            trailingIcon = {
+                                Icon(imageVector = Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Cerrar sesión")
+                            }
+                        )
+                    }
+                }
+            )
+        },
+        content = {
+            Surface(
+                color = Color.White,
+                modifier = Modifier.padding(it)
+            ) {
+                content()
+            }
+        }
+    )
+}
+
 
 sealed class Options(val title: String, val icon: ImageVector) {
     object Option1 : Options("Perfil", Icons.Default.AccountCircle)
@@ -67,7 +155,7 @@ sealed class Options(val title: String, val icon: ImageVector) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomScaffold(
+fun CustomScaffoldDoNotUse2(
     navController: NavController,
     googleAuthUiClient: GoogleAuthUiClient
 ) {
