@@ -1,6 +1,8 @@
-package com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in
+package com.sergimarrahyarenas.bloodstats.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.sergimarrahyarenas.bloodstats.api.googlemanagement.sign_in.SignInResult
+import com.sergimarrahyarenas.bloodstats.api.googlemanagement.sign_in.SignInState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

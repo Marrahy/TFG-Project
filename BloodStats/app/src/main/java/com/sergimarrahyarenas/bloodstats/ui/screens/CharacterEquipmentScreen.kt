@@ -8,27 +8,27 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.sergimarrahyarenas.bloodstats.api.viewmodel.BlizzardViewModel
+import com.sergimarrahyarenas.bloodstats.viewmodel.BlizzardViewModel
 import com.sergimarrahyarenas.bloodstats.common.CustomScaffold
 import com.sergimarrahyarenas.bloodstats.navigation.Routes
-import com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.GoogleAuthUiClient
+import com.sergimarrahyarenas.bloodstats.api.googlemanagement.sign_in.GoogleAuthUiClient
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
@@ -38,8 +38,6 @@ fun CharacterEquipmentScreen(
     googleAuthUiClient: GoogleAuthUiClient,
     coroutineScope: CoroutineScope
 ) {
-
-
     CustomScaffold(
         navController = navController,
         googleAuthUiClient = googleAuthUiClient,
@@ -47,8 +45,8 @@ fun CharacterEquipmentScreen(
         content = {
             val characterProfileSummary by blizzardViewModel.characterProfileSummary.observeAsState()
             val characterMedia by blizzardViewModel.characterMedia.observeAsState()
-            val characterEquipment by blizzardViewModel.characterEquipment.observeAsState()
-            val characterEquipmentMedia by blizzardViewModel.characterEquipmentMedia.observeAsState()
+            val characterEquipment by blizzardViewModel.equippedItems.observeAsState()
+            val characterEquipmentMedia by blizzardViewModel.equippedItemMedia.observeAsState()
             val buttonList = listOf(
                 "Atributos", "Clan", "Especialización", "Mazmorras"
             )
@@ -76,6 +74,36 @@ fun CharacterEquipmentScreen(
                         .clip(CircleShape)
                         .size(width = 150.dp, height = 150.dp)
                 )
+
+                LazyColumn(
+                    verticalArrangement = Arrangement.SpaceEvenly,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    characterEquipment?.size?.let {
+                        items(it) { itemEquipped ->
+                            characterEquipment!![itemEquipped]?.name?.let { name ->
+                                AnnotatedString(
+                                    name
+                                )
+                            }?.let { annotatedString ->
+                                Row {
+                                    AsyncImage(
+                                        model = characterEquipmentMedia?.get(itemEquipped)?.assets?.get(0)?.value, //OUTOFBOUNDS!!!!!!!!!!
+                                        contentDescription = "Item Media",
+                                        modifier = Modifier
+                                            .clip(CircleShape)
+                                            .size(width = 25.dp, height = 25.dp)
+                                    )
+                                    Spacer(modifier = Modifier.padding(8.dp))
+                                    ClickableText(text = annotatedString) {
+                                        navController.navigate(route = Routes.ItemDataScreen.route)
+                                    }
+                                }
+                                Spacer(modifier = Modifier.padding(8.dp))
+                            }
+                        }
+                    }
+                }
 
                 LazyRow(
                     verticalAlignment = Alignment.CenterVertically,

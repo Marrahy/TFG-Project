@@ -1,13 +1,13 @@
-package com.sergimarrahyarenas.bloodstats.api
+package com.sergimarrahyarenas.bloodstats.api.blizzardmanagement
 
 import android.util.Log
-import com.sergimarrahyarenas.bloodstats.api.Constants.BASE_ACCESS_TOKEN_URL
-import com.sergimarrahyarenas.bloodstats.api.Constants.BASE_DATA_URL
-import com.sergimarrahyarenas.bloodstats.api.Constants.BASE_PROFILE_URL
-import com.sergimarrahyarenas.bloodstats.api.Constants.BEARER
-import com.sergimarrahyarenas.bloodstats.api.Constants.CLIENT_ID
-import com.sergimarrahyarenas.bloodstats.api.Constants.CLIENT_SECRET
-import com.sergimarrahyarenas.bloodstats.api.RetrofitApiClient.RetrofitInstance.retrofit
+import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.Constants.BASE_ACCESS_TOKEN_URL
+import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.Constants.BASE_DATA_URL
+import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.Constants.BASE_PROFILE_URL
+import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.Constants.BEARER
+import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.Constants.CLIENT_ID
+import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.Constants.CLIENT_SECRET
+import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.RetrofitApiClient.RetrofitInstance.retrofit
 import com.sergimarrahyarenas.bloodstats.models.characermythickeystoneprofile.CharacterMythicKeystoneProfile
 import com.sergimarrahyarenas.bloodstats.models.characterprofilesummary.CharacterProfileSummary
 import com.sergimarrahyarenas.bloodstats.models.characterequipment.CharacterEquipment
@@ -91,8 +91,14 @@ object RetrofitInstance {
         if (response.isSuccessful) response.body() else null
     }.await()
 
-    suspend fun getItemData(accessToken: String, name: String): ItemData? = CoroutineScope(Dispatchers.IO).async {
-        val response = retrofit(BASE_DATA_URL).getItemData(accessToken = "$BEARER $accessToken", itemName = name)
+    suspend fun getItemDataById(accessToken: String, itemId: Int): ItemData? = CoroutineScope(Dispatchers.IO).async {
+        val response = retrofit(BASE_DATA_URL).getItemDataById(accessToken = "$BEARER $accessToken", itemId = itemId)
+        Log.d("RESPONSE getItemDataById: ", "$response")
+        if (response.isSuccessful) response.body() else null
+    }.await()
+
+    suspend fun getItemData(accessToken: String, itemName: String): ItemData? = CoroutineScope(Dispatchers.IO).async {
+        val response = retrofit(BASE_DATA_URL).getItemData(accessToken = "$BEARER $accessToken", itemName = itemName)
         Log.d("RESPONSE getItemData: ", "$response")
         if (response.isSuccessful) response.body() else null
     }.await()

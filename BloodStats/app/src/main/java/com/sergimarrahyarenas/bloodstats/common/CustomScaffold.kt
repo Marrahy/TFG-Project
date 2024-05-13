@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
@@ -55,10 +54,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.sergimarrahyarenas.bloodstats.models.charactermedia.CharacterMedia
-import com.sergimarrahyarenas.bloodstats.models.itemdata.ItemData
 import com.sergimarrahyarenas.bloodstats.models.itemmedia.ItemMedia
 import com.sergimarrahyarenas.bloodstats.navigation.Routes
-import com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.GoogleAuthUiClient
+import com.sergimarrahyarenas.bloodstats.api.googlemanagement.sign_in.GoogleAuthUiClient
+import com.sergimarrahyarenas.bloodstats.models.itemdata.ItemData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -250,43 +249,43 @@ fun GridListSwitch(
     }
 }
 
-@Composable
-fun EntitiesVerticalGrid(item: ItemMedia, items: List<ItemData>) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(3),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        items(items) { item ->
+//@Composable
+//fun EntitiesVerticalGrid(item: ItemMedia, items: List<ItemData>) {
+//    LazyVerticalGrid(
+//        columns = GridCells.Fixed(3),
+//        verticalArrangement = Arrangement.spacedBy(4.dp),
+//        horizontalArrangement = Arrangement.spacedBy(4.dp)
+//    ) {
+//        items(items) { item ->
+//
+//        }
+//    }
+//}
 
-        }
-    }
-}
-
-@Composable
-fun ItemInfoGreed(item: ItemMedia, itemInfo: ItemData) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-        modifier = Modifier.padding(4.dp)
-    ) {
-        AsyncImage(
-            model = item.assets[0].value,
-            contentDescription = "Item Image",
-            modifier = Modifier
-                .clip(RoundedCornerShape(8.dp))
-                .fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
-        Text(
-            text = "${itemInfo.results}",
-            fontSize = 12.sp,
-            maxLines = 1,
-            softWrap = false,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
-        )
-    }
-}
+//@Composable
+//fun ItemInfoGreed(item: ItemMedia, itemInfo: ItemData) {
+//    Card(
+//        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+//        modifier = Modifier.padding(4.dp)
+//    ) {
+//        AsyncImage(
+//            model = item.assets[0].value,
+//            contentDescription = "Item Image",
+//            modifier = Modifier
+//                .clip(RoundedCornerShape(8.dp))
+//                .fillMaxSize(),
+//            contentScale = ContentScale.Crop
+//        )
+//        Text(
+//            text = "${itemInfo.results}",
+//            fontSize = 12.sp,
+//            maxLines = 1,
+//            softWrap = false,
+//            overflow = TextOverflow.Ellipsis,
+//            modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
+//        )
+//    }
+//}
 
 @Composable
 fun CharacterInfoGreed(character: CharacterMedia?) {

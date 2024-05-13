@@ -1,6 +1,6 @@
 package com.sergimarrahyarenas.bloodstats.models.itemdata
 
-data class InventoryType(
+data class ItemStats(
     val name: String,
-    val type: String
+    val display_string: String,
 )

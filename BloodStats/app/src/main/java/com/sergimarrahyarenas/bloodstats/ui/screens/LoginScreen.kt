@@ -27,8 +27,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.sergimarrahyarenas.bloodstats.common.CustomScaffold
 import com.sergimarrahyarenas.bloodstats.navigation.Routes
-import com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.GoogleAuthUiClient
-import com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.GoogleViewModel
+import com.sergimarrahyarenas.bloodstats.api.googlemanagement.sign_in.GoogleAuthUiClient
+import com.sergimarrahyarenas.bloodstats.viewmodel.GoogleViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 

@@ -24,7 +24,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun LoadingScreen(navController: NavController) {
     LaunchedEffect(key1 = true) {
-        delay(3000)
+        delay(5500)
         navController.navigate(route = Routes.CharacterEquipmentScreen.route)
     }
 

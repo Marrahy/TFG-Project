@@ -2,7 +2,7 @@ package com.sergimarrahyarenas.bloodstats.data
 
 import android.util.Log
 
-data class Character(
+data class CharacterClassSpecialization(
     val characterClass: String?,
     val characterSpec: String?
 ) {
@@ -72,9 +72,9 @@ data class Character(
             )
         )
 
-        fun getAttribute(character: Character): String? {
-            Log.d("attribute: ", "${attributeMap[character.characterClass]?.get(character.characterSpec)}")
-            return attributeMap[character.characterClass]?.get(character.characterSpec)
+        fun getAttribute(characterClassSpecialization: CharacterClassSpecialization): String? {
+            Log.d("attribute: ", "${attributeMap[characterClassSpecialization.characterClass]?.get(characterClassSpecialization.characterSpec)}")
+            return attributeMap[characterClassSpecialization.characterClass]?.get(characterClassSpecialization.characterSpec)
         }
     }
 }

@@ -1,16 +1,15 @@
-package com.sergimarrahyarenas.bloodstats.api
+package com.sergimarrahyarenas.bloodstats.api.blizzardmanagement
 
-import com.sergimarrahyarenas.bloodstats.api.Constants.CHARACTER_MEDIA
-import com.sergimarrahyarenas.bloodstats.api.Constants.EQUIPMENT
-import com.sergimarrahyarenas.bloodstats.api.Constants.GRANT_TYPE
-import com.sergimarrahyarenas.bloodstats.api.Constants.ITEM_MEDIA
-import com.sergimarrahyarenas.bloodstats.api.Constants.LOCALE_ES
-import com.sergimarrahyarenas.bloodstats.api.Constants.MYTHIC_KEYSTONE_PROFILE
-import com.sergimarrahyarenas.bloodstats.api.Constants.NAMESPACE
-import com.sergimarrahyarenas.bloodstats.api.Constants.ROSTER
-import com.sergimarrahyarenas.bloodstats.api.Constants.SPECIALIZATION
-import com.sergimarrahyarenas.bloodstats.api.Constants.STATIC_NAMESPACE
-import com.sergimarrahyarenas.bloodstats.api.Constants.STATISTICS
+import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.Constants.CHARACTER_MEDIA
+import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.Constants.EQUIPMENT
+import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.Constants.GRANT_TYPE
+import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.Constants.LOCALE_ES
+import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.Constants.MYTHIC_KEYSTONE_PROFILE
+import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.Constants.NAMESPACE
+import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.Constants.ROSTER
+import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.Constants.SPECIALIZATION
+import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.Constants.STATIC_NAMESPACE
+import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.Constants.STATISTICS
 import com.sergimarrahyarenas.bloodstats.models.characermythickeystoneprofile.CharacterMythicKeystoneProfile
 import com.sergimarrahyarenas.bloodstats.models.characterprofilesummary.CharacterProfileSummary
 import com.sergimarrahyarenas.bloodstats.models.characterequipment.CharacterEquipment
@@ -107,20 +106,28 @@ interface BlizzardApiService {
         @Query("locale") locale: String = LOCALE_ES
     ): Response<CharacterMedia>
 
+    @GET("item/{itemId}")
+    suspend fun getItemDataById(
+        @Header("Authorization") accessToken: String,
+        @Path("itemId") itemId: Int,
+        @Query("namespace") nameSpace: String = STATIC_NAMESPACE,
+        @Query("locale") locale: String = LOCALE_ES
+    ): Response<ItemData>
+
     @GET("item")
     suspend fun getItemData(
         @Header("Authorization") accessToken: String,
-        @Query("name.en_US") itemName: String,
+        @Query("name.es_ES") itemName: String,
         @Query("namespace") nameSpace: String = STATIC_NAMESPACE,
         @Query("_page") pageNumber: Int = 1,
         @Query("orderby") orderBy: String = "id"
     ): Response<ItemData>
 
-    @GET("item/{itemId}")
+    @GET("media/item/{itemId}")
     suspend fun getItemMedia(
         @Header("Authorization") accessToken: String,
         @Path("itemId") itemId: Int,
-        @Path("item-media") itemMedia: String = ITEM_MEDIA,
-        @Query("namespace") namespace: String = STATIC_NAMESPACE
+        @Query("namespace") namespace: String = STATIC_NAMESPACE,
+        @Query("locale") locale: String = LOCALE_ES
     ): Response<ItemMedia>
 }

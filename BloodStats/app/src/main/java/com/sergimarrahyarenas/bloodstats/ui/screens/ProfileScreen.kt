@@ -23,9 +23,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.GoogleAuthUiClient
-import com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.GoogleViewModel
-import com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in.UserData
+import com.sergimarrahyarenas.bloodstats.api.googlemanagement.sign_in.GoogleAuthUiClient
+import com.sergimarrahyarenas.bloodstats.viewmodel.GoogleViewModel
+import com.sergimarrahyarenas.bloodstats.api.googlemanagement.sign_in.UserData
 import kotlinx.coroutines.launch
 
 @Composable

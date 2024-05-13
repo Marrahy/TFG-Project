@@ -1,6 +1,6 @@
 package com.sergimarrahyarenas.bloodstats.models.itemdata
 
-data class Result(
-    val `data`: Data,
+data class Item(
+    val id: Int,
     val key: Key
 )

@@ -1,4 +1,4 @@
-package com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in
+package com.sergimarrahyarenas.bloodstats.api.googlemanagement.sign_in
 
 import android.content.Context
 import android.content.Intent

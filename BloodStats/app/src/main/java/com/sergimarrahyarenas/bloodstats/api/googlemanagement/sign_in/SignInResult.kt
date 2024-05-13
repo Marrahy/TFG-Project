@@ -1,4 +1,4 @@
-package com.sergimarrahyarenas.bloodstats.ui.presentation.sign_in
+package com.sergimarrahyarenas.bloodstats.api.googlemanagement.sign_in
 
 data class SignInResult(
     val data: UserData?,

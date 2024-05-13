@@ -1,6 +1,5 @@
 package com.sergimarrahyarenas.bloodstats.models.itemdata
 
-data class Media(
-    val id: Int,
-    val key: Key
+data class Links(
+    val self: Self
 )

@@ -1,4 +1,4 @@
-package com.sergimarrahyarenas.bloodstats.api
+package com.sergimarrahyarenas.bloodstats.api.blizzardmanagement
 
 object Constants {
     const val CLIENT_ID = "286817623f474bcface004dc20313828"
@@ -16,7 +16,7 @@ object Constants {
     const val STATISTICS = "statistics"
     const val GRANT_TYPE = "client_credentials"
     const val NAMESPACE = "profile-eu"
-    const val STATIC_NAMESPACE = "namespace=static-eu"
+    const val STATIC_NAMESPACE = "static-eu"
     const val LOCALE_ES = "es_ES"
     const val LOCALE_EN = "en_EN"
     const val LOCALE_IT = "it_IT"
