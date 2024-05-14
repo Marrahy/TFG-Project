@@ -74,7 +74,7 @@ object RetrofitInstance {
     }.await()
 
     suspend fun getCharacterGuildRoster(accessToken: String, name: String, realm: String): CharacterGuildRoster? = CoroutineScope(Dispatchers.IO).async {
-        val response = retrofit(BASE_PROFILE_URL).getCharacterGuildRoster(accessToken = "$BEARER $accessToken", characterName = name, realmSlug = realm)
+        val response = retrofit(BASE_DATA_URL).getCharacterGuildRoster(accessToken = "$BEARER $accessToken", characterName = name, realmSlug = realm)
         Log.d("RESPONSE getCharacterGuildRoster: ", "$response")
         if (response.isSuccessful) response.body() else null
     }.await()

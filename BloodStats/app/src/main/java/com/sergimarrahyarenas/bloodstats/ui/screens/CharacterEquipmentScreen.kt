@@ -46,7 +46,7 @@ fun CharacterEquipmentScreen(
             val characterProfileSummary by blizzardViewModel.characterProfileSummary.observeAsState()
             val characterMedia by blizzardViewModel.characterMedia.observeAsState()
             val characterEquipment by blizzardViewModel.equippedItems.observeAsState()
-            val characterEquipmentMedia by blizzardViewModel.equippedItemMedia.observeAsState()
+            val characterEquipmentMedia by blizzardViewModel.equippedItemsMedia.observeAsState()
             val buttonList = listOf(
                 "Atributos", "Clan", "Especialización", "Mazmorras"
             )
@@ -74,37 +74,7 @@ fun CharacterEquipmentScreen(
                         .clip(CircleShape)
                         .size(width = 150.dp, height = 150.dp)
                 )
-
-                LazyColumn(
-                    verticalArrangement = Arrangement.SpaceEvenly,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    characterEquipment?.size?.let {
-                        items(it) { itemEquipped ->
-                            characterEquipment!![itemEquipped]?.name?.let { name ->
-                                AnnotatedString(
-                                    name
-                                )
-                            }?.let { annotatedString ->
-                                Row {
-                                    AsyncImage(
-                                        model = characterEquipmentMedia?.get(itemEquipped)?.assets?.get(0)?.value, //OUTOFBOUNDS!!!!!!!!!!
-                                        contentDescription = "Item Media",
-                                        modifier = Modifier
-                                            .clip(CircleShape)
-                                            .size(width = 25.dp, height = 25.dp)
-                                    )
-                                    Spacer(modifier = Modifier.padding(8.dp))
-                                    ClickableText(text = annotatedString) {
-                                        navController.navigate(route = Routes.ItemDataScreen.route)
-                                    }
-                                }
-                                Spacer(modifier = Modifier.padding(8.dp))
-                            }
-                        }
-                    }
-                }
-
+                Spacer(modifier = Modifier.padding(8.dp))
                 LazyRow(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly,
@@ -113,11 +83,11 @@ fun CharacterEquipmentScreen(
                         Button(
                             onClick = {
                                 when(index) {
-                                    0 -> {
-                                        navController.navigate(route = Routes.CharacterStatisticsScreen.route)
-                                        blizzardViewModel.loadCharacterStatistics(characterProfileSummary!!.name.toLowerCase(), characterProfileSummary!!.realm.name.toLowerCase())
+                                    0 -> navController.navigate(route = Routes.CharacterStatisticsScreen.route)
+                                    1 -> {
+                                        navController.navigate(route = Routes.CharacterGuildScreen.route)
+                                        blizzardViewModel.loadCharacterGuildRoster(characterProfileSummary!!.guild.name, characterProfileSummary!!.realm.name.lowercase())
                                     }
-                                    1 -> navController.navigate(route = Routes.CharacterGuildScreen.route)
                                     2 -> navController.navigate(route = Routes.CharacterSpecializationScreen.route)
                                     3 -> navController.navigate(route = Routes.CharacterDungeonsScreen.route)
                                 }
@@ -127,6 +97,38 @@ fun CharacterEquipmentScreen(
                                 .fillMaxWidth()
                         ) {
                             Text(text = buttonList[index])
+                        }
+                    }
+                }
+                LazyColumn(
+                    verticalArrangement = Arrangement.SpaceEvenly,
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    characterEquipment?.size?.let {
+                        items(it) { itemEquipped ->
+                            characterEquipment!![itemEquipped]?.name?.let { name ->
+                                AnnotatedString(
+                                    name
+                                )
+                            }?.let { annotatedString ->
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    AsyncImage(
+                                        model = characterEquipmentMedia?.get(itemEquipped)?.assets?.get(0)?.value,
+                                        contentDescription = "Item Media",
+                                        modifier = Modifier
+                                            .clip(CircleShape)
+                                            .size(width = 50.dp, height = 50.dp)
+                                    )
+                                    Spacer(modifier = Modifier.padding(8.dp))
+                                    ClickableText(text = annotatedString) {
+                                        navController.navigate(route = Routes.ItemDataScreen.route)
+                                    }
+                                }
+                                Spacer(modifier = Modifier.padding(8.dp))
+                            }
                         }
                     }
                 }

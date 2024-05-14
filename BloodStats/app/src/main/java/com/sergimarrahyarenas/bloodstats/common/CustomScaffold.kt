@@ -1,14 +1,9 @@
 package com.sergimarrahyarenas.bloodstats.common
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
@@ -18,51 +13,38 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.sergimarrahyarenas.bloodstats.models.charactermedia.CharacterMedia
-import com.sergimarrahyarenas.bloodstats.models.itemmedia.ItemMedia
-import com.sergimarrahyarenas.bloodstats.navigation.Routes
 import com.sergimarrahyarenas.bloodstats.api.googlemanagement.sign_in.GoogleAuthUiClient
-import com.sergimarrahyarenas.bloodstats.models.itemdata.ItemData
+import com.sergimarrahyarenas.bloodstats.models.charactermedia.CharacterMedia
+import com.sergimarrahyarenas.bloodstats.navigation.Routes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,7 +57,7 @@ fun CustomScaffold(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Título de la aplicación") },
+                title = { Text(text = "BloodStats") },
                 navigationIcon = {
                     var expanded by remember { mutableStateOf(false) }
                     IconButton(
@@ -143,91 +125,6 @@ fun CustomScaffold(
             }
         }
     )
-}
-
-
-sealed class Options(val title: String, val icon: ImageVector) {
-    object Option1 : Options("Perfil", Icons.Default.AccountCircle)
-    object Option2 : Options("Buscar", Icons.Default.Search)
-    object Option3 : Options("Cerrar sesión", Icons.AutoMirrored.Filled.ExitToApp)
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CustomScaffoldDoNotUse2(
-    navController: NavController,
-    googleAuthUiClient: GoogleAuthUiClient
-) {
-    val options = listOf(Options.Option1, Options.Option2, Options.Option3)
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    var selectedOption by remember { mutableStateOf(options[0].title) }
-    val scope = rememberCoroutineScope()
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(text = selectedOption)
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            if (drawerState.isOpen) scope.launch { drawerState.close() }
-                            else scope.launch { drawerState.open() }
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = "Menu"
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(
-                        onClick = {
-                            navController.navigate("profile_screen")
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.AccountCircle,
-                            contentDescription = "Profile"
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.LightGray)
-            )
-        }
-    ) {
-        ModalNavigationDrawer(
-            drawerState = drawerState,
-            drawerContent = {
-                ModalDrawerSheet {
-                    Spacer(modifier = Modifier.height(12.dp))
-                    options.forEach { option ->
-                        NavigationDrawerItem(
-                            icon = {
-                                   Icon(
-                                       imageVector = option.icon,
-                                       contentDescription = option.title
-                                   )
-                            },
-                            label = { Text(text = option.title) },
-                            selected = option.title == selectedOption,
-                            onClick = {
-                                scope.launch { drawerState.close() }
-                                selectedOption = option.title
-                            },
-                            modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-                        )
-                    }
-                }
-            },
-            modifier = Modifier.padding(it),
-            content = {
-
-            }
-        )
-    }
 }
 
 @Composable

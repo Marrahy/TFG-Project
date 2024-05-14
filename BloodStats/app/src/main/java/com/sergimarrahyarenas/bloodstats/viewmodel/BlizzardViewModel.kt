@@ -1,6 +1,5 @@
 package com.sergimarrahyarenas.bloodstats.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,9 +8,9 @@ import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.RetrofitApiClien
 import com.sergimarrahyarenas.bloodstats.data.CharacterClassSpecialization
 import com.sergimarrahyarenas.bloodstats.models.characterequipment.CharacterEquipment
 import com.sergimarrahyarenas.bloodstats.models.characterequipment.EquippedItem
+import com.sergimarrahyarenas.bloodstats.models.characterguildroster.CharacterGuildRoster
 import com.sergimarrahyarenas.bloodstats.models.charactermedia.CharacterMedia
 import com.sergimarrahyarenas.bloodstats.models.characterprofilesummary.CharacterProfileSummary
-import com.sergimarrahyarenas.bloodstats.models.characterspecialization.CharacterSpecialization
 import com.sergimarrahyarenas.bloodstats.models.characterstatistics.CharacterStatistics
 import com.sergimarrahyarenas.bloodstats.models.itemdata.ItemData
 import com.sergimarrahyarenas.bloodstats.models.itemdata.ItemStats
@@ -19,7 +18,7 @@ import com.sergimarrahyarenas.bloodstats.models.itemmedia.ItemMedia
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class BlizzardViewModel: ViewModel() {
+class BlizzardViewModel : ViewModel() {
 
     private val accessTokenService = RetrofitApiClient()
 
@@ -36,16 +35,15 @@ class BlizzardViewModel: ViewModel() {
     val characterProfileSummary: LiveData<CharacterProfileSummary?> = _characterProfileSummary
 
     private val _characterEquipment = MutableLiveData<CharacterEquipment?>()
-    val characterEquipment: LiveData<CharacterEquipment?> = _characterEquipment
 
     private val _characterStatistics = MutableLiveData<CharacterStatistics?>()
     val characterStatistics: LiveData<CharacterStatistics?> = _characterStatistics
 
-    private val _characterSpecialization = MutableLiveData<CharacterSpecialization?>()
-    val characterSpecialization: LiveData<CharacterSpecialization?> = _characterSpecialization
+    private val _characterSpecialization = MutableLiveData<String?>()
+    val characterSpecialization: LiveData<String?> = _characterSpecialization
 
-    private val _characterSpec = MutableLiveData<String?>()
-    val characterSpec: LiveData<String?> = _characterSpec
+    private val _characterGuildRoster = MutableLiveData<CharacterGuildRoster?>()
+    val characterGuildRoster: LiveData<CharacterGuildRoster?> = _characterGuildRoster
 
     private val _characterMedia = MutableLiveData<CharacterMedia?>()
     val characterMedia: LiveData<CharacterMedia?> = _characterMedia
@@ -60,7 +58,7 @@ class BlizzardViewModel: ViewModel() {
     val itemStats: LiveData<List<ItemStats>> = _itemStats
 
     private val _equippedItemsMedia = MutableLiveData<List<ItemMedia?>>()
-    val equippedItemMedia: LiveData<List<ItemMedia?>> = _equippedItemsMedia
+    val equippedItemsMedia: LiveData<List<ItemMedia?>> = _equippedItemsMedia
 
     private val _itemMedia = MutableLiveData<ItemMedia?>()
     val itemMedia: LiveData<ItemMedia?> = _itemMedia
@@ -73,26 +71,6 @@ class BlizzardViewModel: ViewModel() {
         }
     }
 
-    fun loadCharacterStatistics(name: String, realm: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _isLoading.postValue(true)
-            try {
-                _characterStatistics.postValue(
-                    accessTokenService.getCharacterStatisticsSummary(
-                        accessToken = accessToken.value!!,
-                        name = name,
-                        realm = realm
-                    )
-                )
-
-                _responseError.postValue(false)
-            } catch (e: Exception) {
-                _responseError.postValue(true)
-            }
-            _isLoading.postValue(false)
-        }
-    }
-
     fun loadCharacterProfileSummaryEquipmentMedia(name: String, realm: String) {
         viewModelScope.launch(Dispatchers.IO) {
             _isLoading.postValue(true)
@@ -100,24 +78,24 @@ class BlizzardViewModel: ViewModel() {
                 _characterProfileSummary.postValue(
                     accessTokenService.getCharacterProfileSummary(
                         accessToken = accessToken.value!!,
-                        name = name,
-                        realm = realm
+                        name = name.lowercase(),
+                        realm = realm.lowercase()
                     )
                 )
 
                 _characterEquipment.postValue(
                     accessTokenService.getCharacterEquipment(
                         accessToken = accessToken.value!!,
-                        name = name,
-                        realm = realm
+                        name = name.lowercase(),
+                        realm = realm.lowercase()
                     )
                 )
 
                 _characterMedia.postValue(
                     accessTokenService.getCharacterMedia(
                         accessToken = accessToken.value!!,
-                        name = name,
-                        realm = realm
+                        name = name.lowercase(),
+                        realm = realm.lowercase()
                     )
                 )
 
@@ -131,27 +109,56 @@ class BlizzardViewModel: ViewModel() {
                     }
                 }
 
-                equippedItems.value.let { equippedItemsMedia ->
-                    equippedItemsMedia?.forEach { equippedItemMedia ->
-                        equippedItemMedia?.item?.id?.let {
-                            _equippedItemsMedia.postValue(
-                                listOf(
-                                    accessTokenService.getItemMedia(
-                                        accessToken = accessToken.value!!,
-                                        itemId = it
-                                    )
-                                )
-                            )
-                        }
+                val equippedItemsMediaList = _characterEquipment.value?.equipped_items?.map { equippedItem ->
+                    equippedItem.media.id.let {
+                        accessTokenService.getItemMedia(
+                            accessToken = accessToken.value!!,
+                            itemId = it
+                        )
                     }
                 }
+                _equippedItemsMedia.postValue(equippedItemsMediaList!!)
 
+                characterProfileSummary.value?.name?.let { loadCharacterStatistics(it.lowercase(), characterProfileSummary.value!!.realm.name.lowercase()) }
+                characterProfileSummary.value?.guild?.let { loadCharacterGuildRoster(it.name.lowercase(), characterProfileSummary.value!!.realm.name.lowercase()) }
                 getPrimaryAttribute()
-            _responseError.postValue(false)
-        } catch (e: Exception) {
-            _responseError.postValue(true)
-        }
+                _responseError.postValue(false)
+            } catch (e: Exception) {
+                _responseError.postValue(true)
+            }
             _isLoading.postValue(false)
+        }
+    }
+
+    private fun loadCharacterStatistics(name: String, realm: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _isLoading.postValue(true)
+            try {
+                _characterStatistics.postValue(
+                    accessTokenService.getCharacterStatisticsSummary(
+                        accessToken = accessToken.value!!,
+                        name = name.lowercase(),
+                        realm = realm.lowercase()
+                    )
+                )
+
+                _responseError.postValue(false)
+            } catch (e: Exception) {
+                _responseError.postValue(true)
+            }
+            _isLoading.postValue(false)
+        }
+    }
+
+    fun loadCharacterGuildRoster(guildName: String, realm: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _characterGuildRoster.postValue(
+                accessTokenService.getCharacterGuildRoster(
+                    accessToken = accessToken.value!!,
+                    name = guildName.lowercase(),
+                    realm = realm.lowercase()
+                )
+            )
         }
     }
 
@@ -188,7 +195,12 @@ class BlizzardViewModel: ViewModel() {
         val characterClass = _characterProfileSummary.value?.character_class?.name
         val characterSpec = _characterProfileSummary.value?.active_spec?.name
 
-        val spec = CharacterClassSpecialization.Resources.getAttribute(CharacterClassSpecialization(characterClass, characterSpec))
-        return _characterSpec.postValue(spec)
+        val spec = CharacterClassSpecialization.Resources.getAttribute(
+            CharacterClassSpecialization(
+                characterClass,
+                characterSpec
+            )
+        )
+        return _characterSpecialization.postValue(spec)
     }
 }

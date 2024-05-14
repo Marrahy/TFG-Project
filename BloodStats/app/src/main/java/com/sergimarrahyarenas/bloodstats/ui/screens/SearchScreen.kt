@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -20,13 +21,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.sergimarrahyarenas.bloodstats.api.googlemanagement.sign_in.GoogleAuthUiClient
+import com.sergimarrahyarenas.bloodstats.common.CustomScaffold
 import com.sergimarrahyarenas.bloodstats.viewmodel.BlizzardViewModel
 import com.sergimarrahyarenas.bloodstats.navigation.Routes
+import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun SearchScreen(
     blizzardViewModel: BlizzardViewModel,
-    navController: NavController
+    navController: NavController,
+    googleAuthUiClient: GoogleAuthUiClient,
+    coroutineScope: CoroutineScope
 ) {
     val isLoading: Boolean by blizzardViewModel.isLoading.observeAsState(initial = false)
     val responseError: Boolean by blizzardViewModel.responseError.observeAsState(initial = false)
@@ -34,27 +40,41 @@ fun SearchScreen(
     var searchedEntity by remember { mutableStateOf("") }
     var realm by remember { mutableStateOf("") }
 
-    SearchBox(
-        searchedEntity = searchedEntity,
-        realm = realm,
-        onNameChange = { searchedEntity = it },
-        onRealmChange = {
-            if (it != null) {
-                realm = it
+    CustomScaffold(
+        navController = navController,
+        googleAuthUiClient = googleAuthUiClient,
+        coroutineScope = coroutineScope,
+        content = {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+
             }
-        },
-        onClickPress = {
-            blizzardViewModel.loadCharacterProfileSummaryEquipmentMedia(searchedEntity, realm)
+            SearchBox(
+                searchedEntity = searchedEntity,
+                realm = realm,
+                onNameChange = { searchedEntity = it },
+                onRealmChange = {
+                    if (it != null) {
+                        realm = it
+                    }
+                },
+                onClickPress = {
+                    blizzardViewModel.loadCharacterProfileSummaryEquipmentMedia(searchedEntity, realm)
+                }
+            )
+
+            Box {
+                if (isLoading) {
+                    navController.navigate(route = Routes.LoadingScreen.route)
+                } else if (responseError) {
+                    Text(text = "\"$searchedEntity\" no coincide con ninguna busqueda")
+                }
+            }
         }
     )
-
-    Box {
-        if (isLoading) {
-            navController.navigate(route = Routes.LoadingScreen.route)
-        } else if (responseError) {
-            Text(text = "\"$searchedEntity\" no coincide con ninguna busqueda")
-        }
-    }
 }
 
 @Composable
@@ -87,7 +107,7 @@ fun SearchBox(
                 onValueChange = { onNameChange(it) },
             )
             OutlinedTextField(
-                label = { Text(text = "Servidor") },
+                label = { Text(text = "Reino") },
                 value = realm,
                 onValueChange = { onRealmChange(it) }
             )

@@ -80,7 +80,9 @@ fun Navigation(context: Context) {
         ) {
             SearchScreen(
                 blizzardViewModel = blizzardViewModel,
-                navController = navController
+                navController = navController,
+                googleAuthUiClient = googleAuthUiClient,
+                coroutineScope = coroutineScope
             )
         }
         composable(
@@ -132,7 +134,12 @@ fun Navigation(context: Context) {
         composable(
             route = Routes.CharacterGuildScreen.route
         ) {
-            CharacterGuildScreen(navController = navController)
+            CharacterGuildScreen(
+                blizzardViewModel = blizzardViewModel,
+                googleAuthUiClient = googleAuthUiClient,
+                navController = navController,
+                coroutineScope = coroutineScope
+            )
         }
         composable(
             route = Routes.ItemDataScreen.route

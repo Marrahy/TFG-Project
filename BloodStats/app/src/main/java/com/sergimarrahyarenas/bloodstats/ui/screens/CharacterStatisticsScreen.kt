@@ -113,7 +113,7 @@ fun Stats(characterStatistics: CharacterStatistics?, blizzardViewModel: Blizzard
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = "${blizzardViewModel.characterSpec.value}: ${characterStatistics?.strength?.effective}")
+            Text(text = "${blizzardViewModel.characterSpecialization.value}: ${characterStatistics?.strength?.effective}")
             Text(text = "Maestría: ${characterStatistics?.mastery?.value?.toInt()}")
         }
         Row(
