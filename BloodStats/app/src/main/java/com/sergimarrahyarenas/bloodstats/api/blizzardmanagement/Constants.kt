@@ -16,6 +16,7 @@ object Constants {
     const val STATISTICS = "statistics"
     const val GRANT_TYPE = "client_credentials"
     const val NAMESPACE = "profile-eu"
+    const val DYNAMIC_NAMESPACE = "dynamic-eu"
     const val STATIC_NAMESPACE = "static-eu"
     const val LOCALE_ES = "es_ES"
     const val LOCALE_EN = "en_EN"

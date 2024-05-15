@@ -86,7 +86,10 @@ fun CharacterEquipmentScreen(
                                     0 -> navController.navigate(route = Routes.CharacterStatisticsScreen.route)
                                     1 -> {
                                         navController.navigate(route = Routes.CharacterGuildScreen.route)
-                                        blizzardViewModel.loadCharacterGuildRoster(characterProfileSummary!!.guild.name, characterProfileSummary!!.realm.name.lowercase())
+                                        characterProfileSummary?.guild?.name?.let {
+                                            blizzardViewModel.loadCharacterGuildRoster(
+                                                it, characterProfileSummary!!.realm.name)
+                                        }
                                     }
                                     2 -> navController.navigate(route = Routes.CharacterSpecializationScreen.route)
                                     3 -> navController.navigate(route = Routes.CharacterDungeonsScreen.route)

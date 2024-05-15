@@ -52,6 +52,7 @@ fun Navigation(context: Context) {
         ) {
             SplashScreen(
                 navController = navController,
+                blizzardViewModel = blizzardViewModel
             )
         }
         composable(
@@ -60,6 +61,7 @@ fun Navigation(context: Context) {
             LoginScreen(
                 navController = navController,
                 googleAuthUiClient = googleAuthUiClient,
+                blizzardViewModel = blizzardViewModel,
                 context = context,
                 viewModel = googleViewModel,
                 coroutineScope = coroutineScope

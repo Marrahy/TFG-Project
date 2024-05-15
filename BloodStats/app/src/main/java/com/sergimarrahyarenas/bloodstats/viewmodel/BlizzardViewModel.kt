@@ -1,5 +1,6 @@
 package com.sergimarrahyarenas.bloodstats.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,11 +11,13 @@ import com.sergimarrahyarenas.bloodstats.models.characterequipment.CharacterEqui
 import com.sergimarrahyarenas.bloodstats.models.characterequipment.EquippedItem
 import com.sergimarrahyarenas.bloodstats.models.characterguildroster.CharacterGuildRoster
 import com.sergimarrahyarenas.bloodstats.models.charactermedia.CharacterMedia
+import com.sergimarrahyarenas.bloodstats.models.charactermedia.Realm
 import com.sergimarrahyarenas.bloodstats.models.characterprofilesummary.CharacterProfileSummary
 import com.sergimarrahyarenas.bloodstats.models.characterstatistics.CharacterStatistics
 import com.sergimarrahyarenas.bloodstats.models.itemdata.ItemData
 import com.sergimarrahyarenas.bloodstats.models.itemdata.ItemStats
 import com.sergimarrahyarenas.bloodstats.models.itemmedia.ItemMedia
+import com.sergimarrahyarenas.bloodstats.models.realm.RealmInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -63,7 +66,10 @@ class BlizzardViewModel : ViewModel() {
     private val _itemMedia = MutableLiveData<ItemMedia?>()
     val itemMedia: LiveData<ItemMedia?> = _itemMedia
 
-    init {
+    private val _listOfRealms = MutableLiveData<List<RealmInfo>?>()
+    val listOfRealms: LiveData<List<RealmInfo>?> = _listOfRealms
+
+    fun getToken() {
         viewModelScope.launch(Dispatchers.IO) {
             _accessToken.postValue(
                 accessTokenService.getAccessTokenApiService()?.accessToken
@@ -78,24 +84,24 @@ class BlizzardViewModel : ViewModel() {
                 _characterProfileSummary.postValue(
                     accessTokenService.getCharacterProfileSummary(
                         accessToken = accessToken.value!!,
-                        name = name.lowercase(),
-                        realm = realm.lowercase()
+                        name = name,
+                        realm = realm
                     )
                 )
 
                 _characterEquipment.postValue(
                     accessTokenService.getCharacterEquipment(
                         accessToken = accessToken.value!!,
-                        name = name.lowercase(),
-                        realm = realm.lowercase()
+                        name = name,
+                        realm = realm
                     )
                 )
 
                 _characterMedia.postValue(
                     accessTokenService.getCharacterMedia(
                         accessToken = accessToken.value!!,
-                        name = name.lowercase(),
-                        realm = realm.lowercase()
+                        name = name,
+                        realm = realm
                     )
                 )
 
@@ -119,8 +125,8 @@ class BlizzardViewModel : ViewModel() {
                 }
                 _equippedItemsMedia.postValue(equippedItemsMediaList!!)
 
-                characterProfileSummary.value?.name?.let { loadCharacterStatistics(it.lowercase(), characterProfileSummary.value!!.realm.name.lowercase()) }
-                characterProfileSummary.value?.guild?.let { loadCharacterGuildRoster(it.name.lowercase(), characterProfileSummary.value!!.realm.name.lowercase()) }
+                characterProfileSummary.value?.name?.let { loadCharacterStatistics(it, characterProfileSummary.value!!.realm.slug) }
+                characterProfileSummary.value?.guild?.let { loadCharacterGuildRoster(it.name, characterProfileSummary.value!!.realm.slug) }
                 getPrimaryAttribute()
                 _responseError.postValue(false)
             } catch (e: Exception) {
@@ -137,8 +143,8 @@ class BlizzardViewModel : ViewModel() {
                 _characterStatistics.postValue(
                     accessTokenService.getCharacterStatisticsSummary(
                         accessToken = accessToken.value!!,
-                        name = name.lowercase(),
-                        realm = realm.lowercase()
+                        name = name,
+                        realm = realm
                     )
                 )
 
@@ -155,8 +161,8 @@ class BlizzardViewModel : ViewModel() {
             _characterGuildRoster.postValue(
                 accessTokenService.getCharacterGuildRoster(
                     accessToken = accessToken.value!!,
-                    name = guildName.lowercase(),
-                    realm = realm.lowercase()
+                    name = guildName,
+                    realm = realm
                 )
             )
         }
@@ -188,6 +194,16 @@ class BlizzardViewModel : ViewModel() {
                     )
                 )
             }
+        }
+    }
+
+    fun loadListOfEURealms(accessToken: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            var realms = accessTokenService.getListOfEURealms(
+                accessToken = accessToken
+            )
+            realms = realms?.sortedBy { it.name }
+            _listOfRealms.postValue(realms)
         }
     }
 

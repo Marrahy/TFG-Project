@@ -11,13 +11,14 @@ import com.sergimarrahyarenas.bloodstats.navigation.Routes
 import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreen(navController: NavController) {
+fun SplashScreen(navController: NavController, blizzardViewModel: BlizzardViewModel) {
     LaunchedEffect(key1 = true) {
         delay(2500)
         navController.popBackStack()
         navController.navigate(Routes.LoginScreen.route)
     }
 
+    blizzardViewModel.getToken()
     Splash()
 }
 

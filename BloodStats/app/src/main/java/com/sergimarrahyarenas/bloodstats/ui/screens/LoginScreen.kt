@@ -28,6 +28,7 @@ import androidx.navigation.NavController
 import com.sergimarrahyarenas.bloodstats.common.CustomScaffold
 import com.sergimarrahyarenas.bloodstats.navigation.Routes
 import com.sergimarrahyarenas.bloodstats.api.googlemanagement.sign_in.GoogleAuthUiClient
+import com.sergimarrahyarenas.bloodstats.viewmodel.BlizzardViewModel
 import com.sergimarrahyarenas.bloodstats.viewmodel.GoogleViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -36,10 +37,15 @@ import kotlinx.coroutines.launch
 fun LoginScreen(
     navController: NavController,
     googleAuthUiClient: GoogleAuthUiClient,
+    blizzardViewModel: BlizzardViewModel,
     context: Context,
     viewModel: GoogleViewModel,
     coroutineScope: CoroutineScope
 ) {
+    if (blizzardViewModel.accessToken.value != null) blizzardViewModel.loadListOfEURealms(
+        accessToken = blizzardViewModel.accessToken.value!!
+    )
+
     CustomScaffold(
         navController = navController,
         googleAuthUiClient = googleAuthUiClient,

@@ -1,6 +1,7 @@
 package com.sergimarrahyarenas.bloodstats.api.blizzardmanagement
 
 import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.Constants.CHARACTER_MEDIA
+import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.Constants.DYNAMIC_NAMESPACE
 import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.Constants.EQUIPMENT
 import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.Constants.GRANT_TYPE
 import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.Constants.LOCALE_ES
@@ -10,6 +11,7 @@ import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.Constants.ROSTER
 import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.Constants.SPECIALIZATION
 import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.Constants.STATIC_NAMESPACE
 import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.Constants.STATISTICS
+import com.sergimarrahyarenas.bloodstats.models.accesstoken.TokenResponse
 import com.sergimarrahyarenas.bloodstats.models.characermythickeystoneprofile.CharacterMythicKeystoneProfile
 import com.sergimarrahyarenas.bloodstats.models.characterprofilesummary.CharacterProfileSummary
 import com.sergimarrahyarenas.bloodstats.models.characterequipment.CharacterEquipment
@@ -19,6 +21,7 @@ import com.sergimarrahyarenas.bloodstats.models.characterspecialization.Characte
 import com.sergimarrahyarenas.bloodstats.models.characterstatistics.CharacterStatistics
 import com.sergimarrahyarenas.bloodstats.models.itemdata.ItemData
 import com.sergimarrahyarenas.bloodstats.models.itemmedia.ItemMedia
+import com.sergimarrahyarenas.bloodstats.models.realm.Realm
 import retrofit2.Response
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -130,4 +133,11 @@ interface BlizzardApiService {
         @Query("namespace") namespace: String = STATIC_NAMESPACE,
         @Query("locale") locale: String = LOCALE_ES
     ): Response<ItemMedia>
+
+    @GET("realm/index")
+    suspend fun getListOfEURealms(
+        @Header("Authorization") accessToken: String,
+        @Query("namespace") nameSpace: String = DYNAMIC_NAMESPACE,
+        @Query("locale") locale: String = LOCALE_ES
+    ): Response<Realm>
 }

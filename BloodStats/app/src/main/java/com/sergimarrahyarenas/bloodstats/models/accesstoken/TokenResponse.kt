@@ -1,4 +1,4 @@
-package com.sergimarrahyarenas.bloodstats.api.blizzardmanagement
+package com.sergimarrahyarenas.bloodstats.models.accesstoken
 
 import com.google.gson.annotations.SerializedName
 

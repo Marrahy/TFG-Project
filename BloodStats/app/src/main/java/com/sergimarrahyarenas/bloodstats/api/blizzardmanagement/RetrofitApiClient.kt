@@ -8,15 +8,18 @@ import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.Constants.BEARER
 import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.Constants.CLIENT_ID
 import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.Constants.CLIENT_SECRET
 import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.RetrofitApiClient.RetrofitInstance.retrofit
+import com.sergimarrahyarenas.bloodstats.models.accesstoken.TokenResponse
 import com.sergimarrahyarenas.bloodstats.models.characermythickeystoneprofile.CharacterMythicKeystoneProfile
 import com.sergimarrahyarenas.bloodstats.models.characterprofilesummary.CharacterProfileSummary
 import com.sergimarrahyarenas.bloodstats.models.characterequipment.CharacterEquipment
 import com.sergimarrahyarenas.bloodstats.models.characterguildroster.CharacterGuildRoster
 import com.sergimarrahyarenas.bloodstats.models.charactermedia.CharacterMedia
+import com.sergimarrahyarenas.bloodstats.models.realm.Realm
 import com.sergimarrahyarenas.bloodstats.models.characterspecialization.CharacterSpecialization
 import com.sergimarrahyarenas.bloodstats.models.characterstatistics.CharacterStatistics
 import com.sergimarrahyarenas.bloodstats.models.itemdata.ItemData
 import com.sergimarrahyarenas.bloodstats.models.itemmedia.ItemMedia
+import com.sergimarrahyarenas.bloodstats.models.realm.RealmInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -37,38 +40,30 @@ object RetrofitInstance {
 
     suspend fun getAccessTokenApiService(): TokenResponse? = CoroutineScope(Dispatchers.IO).async {
         val credentials = Credentials.basic(CLIENT_ID, CLIENT_SECRET)
-
         val response = retrofit(BASE_ACCESS_TOKEN_URL).getAccessToken(credentials)
-
         if (response.isSuccessful) response.body() else null
     }.await()
 
     suspend fun getCharacterProfileSummary(accessToken: String, name: String, realm: String): CharacterProfileSummary? = CoroutineScope(Dispatchers.IO).async {
-        val response = retrofit(BASE_PROFILE_URL).getCharacterProfileSummary(accessToken = "$BEARER $accessToken", characterName = name, realmSlug = realm)
+        val response = retrofit(BASE_PROFILE_URL).getCharacterProfileSummary(accessToken = "$BEARER $accessToken", characterName = name.lowercase(), realmSlug = realm)
         Log.d("RESPONSE getCharacterData: ", "$response")
         if (response.isSuccessful) response.body() else null
     }.await()
 
     suspend fun getCharacterStatisticsSummary(accessToken: String, name: String, realm: String): CharacterStatistics? = CoroutineScope(Dispatchers.IO).async {
-        val response = retrofit(BASE_PROFILE_URL).getCharacterStatisticsSummary(accessToken = "$BEARER $accessToken", characterName = name, realmSlug = realm)
+        val response = retrofit(BASE_PROFILE_URL).getCharacterStatisticsSummary(accessToken = "$BEARER $accessToken", characterName = name.lowercase(), realmSlug = realm)
         Log.d("RESPONSE getCharacterStatisticsSummary: ", "$response")
-        if (response.isSuccessful) {
-            Log.d("NO RESPONSE: ", "$response")
-            response.body()
-        } else {
-            Log.d("NO RESPONSE: ", "$response")
-            null
-        }
+        if (response.isSuccessful) response.body() else null
     }.await()
 
     suspend fun getCharacterSpecialization(accessToken: String, name: String, realm: String): CharacterSpecialization? = CoroutineScope(Dispatchers.IO).async {
-        val response = retrofit(BASE_PROFILE_URL).getCharacterSpecialization(accessToken = "$BEARER $accessToken", characterName = name, realmSlug = realm)
+        val response = retrofit(BASE_PROFILE_URL).getCharacterSpecialization(accessToken = "$BEARER $accessToken", characterName = name.lowercase(), realmSlug = realm)
         Log.d("RESPONSE getCharacterSpecialization: ", "$response")
         if (response.isSuccessful) response.body() else null
     }.await()
 
     suspend fun getCharacterEquipment(accessToken: String, name: String, realm: String): CharacterEquipment? = CoroutineScope(Dispatchers.IO).async {
-        val response = retrofit(BASE_PROFILE_URL).getCharacterEquipmentSummary(accessToken = "$BEARER $accessToken", characterName = name, realmSlug = realm)
+        val response = retrofit(BASE_PROFILE_URL).getCharacterEquipmentSummary(accessToken = "$BEARER $accessToken", characterName = name.lowercase(), realmSlug = realm)
         Log.d("RESPONSE getCharacterEquipment: ", "$response")
         if (response.isSuccessful) response.body() else null
     }.await()
@@ -80,13 +75,13 @@ object RetrofitInstance {
     }.await()
 
     suspend fun getCharacterMythicKeystoneProfile(accessToken: String, name: String, realm: String): CharacterMythicKeystoneProfile? = CoroutineScope(Dispatchers.IO).async {
-        val response = retrofit(BASE_PROFILE_URL).getCharacterMythicKeystoneProfile(accessToken = "$BEARER $accessToken", characterName = name, realmSlug = realm)
+        val response = retrofit(BASE_PROFILE_URL).getCharacterMythicKeystoneProfile(accessToken = "$BEARER $accessToken", characterName = name.lowercase(), realmSlug = realm)
         Log.d("RESPONSE getCharacterMythicKeystoneProfile: ", "$response")
         if (response.isSuccessful) response.body() else null
     }.await()
 
     suspend fun getCharacterMedia(accessToken: String, name: String, realm: String?): CharacterMedia? = CoroutineScope(Dispatchers.IO).async {
-        val response = retrofit(BASE_PROFILE_URL).getCharacterMedia(accessToken = "$BEARER $accessToken", characterName = name, realm = realm)
+        val response = retrofit(BASE_PROFILE_URL).getCharacterMedia(accessToken = "$BEARER $accessToken", characterName = name.lowercase(), realm = realm)
         Log.d("RESPONSE getCharacterMedia: ", "$response")
         if (response.isSuccessful) response.body() else null
     }.await()
@@ -107,5 +102,11 @@ object RetrofitInstance {
         val response = retrofit(BASE_DATA_URL).getItemMedia(accessToken = "$BEARER $accessToken", itemId = itemId)
         Log.d("RESPONSE getItemMedia: ", "$response")
         if (response.isSuccessful) response.body() else null
+    }.await()
+
+    suspend fun getListOfEURealms(accessToken: String): List<RealmInfo>? = CoroutineScope(Dispatchers.IO).async {
+        val response = retrofit(BASE_DATA_URL).getListOfEURealms(accessToken = "$BEARER $accessToken")
+        Log.d("RESPONSE getListOfEURealms: ", "$response")
+        if (response.isSuccessful) response.body()?.realms else null
     }.await()
 }
