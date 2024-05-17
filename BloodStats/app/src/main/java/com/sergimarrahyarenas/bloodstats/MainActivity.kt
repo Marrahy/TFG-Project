@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.sergimarrahyarenas.bloodstats.navigation.Navigation
 import com.sergimarrahyarenas.bloodstats.ui.theme.BloodStatsTheme
+import com.sergimarrahyarenas.bloodstats.viewmodel.UserViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,8 +19,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             AppContent {
                 val context = LocalContext.current
+                val userViewModel = UserViewModel(context)
 
-                Navigation(context = context)
+                Navigation(userViewModel = userViewModel, context = context)
             }
         }
     }

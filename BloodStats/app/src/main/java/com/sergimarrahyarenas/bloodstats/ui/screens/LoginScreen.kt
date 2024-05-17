@@ -2,6 +2,7 @@ package com.sergimarrahyarenas.bloodstats.ui.screens
 
 import android.app.Activity
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -22,24 +24,31 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.sergimarrahyarenas.bloodstats.ui.common.CustomScaffold
-import com.sergimarrahyarenas.bloodstats.navigation.Routes
 import com.sergimarrahyarenas.bloodstats.api.googlemanagement.sign_in.GoogleAuthUiClient
+import com.sergimarrahyarenas.bloodstats.database.entities.UserEntity
+import com.sergimarrahyarenas.bloodstats.navigation.Routes
+import com.sergimarrahyarenas.bloodstats.ui.common.CustomScaffold
 import com.sergimarrahyarenas.bloodstats.viewmodel.BlizzardViewModel
 import com.sergimarrahyarenas.bloodstats.viewmodel.GoogleViewModel
+import com.sergimarrahyarenas.bloodstats.viewmodel.UserViewModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.UUID
 
 @Composable
 fun LoginScreen(
     navController: NavController,
-    googleAuthUiClient: GoogleAuthUiClient,
+    googleViewModel: GoogleViewModel,
     blizzardViewModel: BlizzardViewModel,
+    userViewModel: UserViewModel,
+    googleAuthUiClient: GoogleAuthUiClient,
     context: Context,
-    viewModel: GoogleViewModel,
     coroutineScope: CoroutineScope
 ) {
     if (blizzardViewModel.accessToken.value != null) blizzardViewModel.loadListOfEURealms(
@@ -51,16 +60,28 @@ fun LoginScreen(
         googleAuthUiClient = googleAuthUiClient,
         coroutineScope = coroutineScope,
         content = {
-            val state by viewModel.state.collectAsStateWithLifecycle()
+            val state by googleViewModel.state.collectAsStateWithLifecycle()
             val launcher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.StartIntentSenderForResult(),
                 onResult = { result ->
                     if (result.resultCode == Activity.RESULT_OK) {
-                        viewModel.viewModelScope.launch {
+                        coroutineScope.launch {
                             val signInResult = googleAuthUiClient.signInWithIntent(
                                 intent = result.data ?: return@launch
                             )
-                            viewModel.onSignInResult(signInResult)
+                            googleViewModel.onSignInResult(signInResult)
+                            val email = signInResult.data?.userEmail ?: return@launch
+                            val userName =
+                                signInResult.data.username ?: "defaultName_${UUID.randomUUID()}"
+                            val userPassword = signInResult.data.userId
+
+                            userViewModel.createIfNotExists(
+                                userEmail = email,
+                                userName = userName,
+                                userPassword = userPassword
+                            ) {
+                                navController.navigate(route = Routes.SearchScreen.route)
+                            }
                         }
                     }
                 }
@@ -75,7 +96,7 @@ fun LoginScreen(
                     ).show()
 
                     navController.navigate(route = Routes.SearchScreen.route)
-                    viewModel.resetState()
+                    googleViewModel.resetState()
                 }
             }
 
@@ -100,26 +121,22 @@ fun LoginScreen(
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier.fillMaxSize()
             ) {
-                var userName by rememberSaveable() {
-                    mutableStateOf("")
-                }
-                var userPassword by rememberSaveable() {
-                    mutableStateOf("")
-                }
+                var userName by rememberSaveable() { mutableStateOf("") }
+                var userPassword by rememberSaveable() { mutableStateOf("") }
 
                 //Image(painter = painterResource(id = R.drawable.dogo), contentDescription = "GoodBoy")
 
                 OutlinedTextField(
                     value = userName,
                     onValueChange = { userName = it },
-                    label = { Text(text = "User Name") },
+                    label = { Text(text = "Nombre de usuario") },
                     singleLine = true
                 )
 
                 OutlinedTextField(
                     value = userPassword,
                     onValueChange = { userPassword = it },
-                    label = { Text(text = "Password") },
+                    label = { Text(text = "Contraseña") },
                     singleLine = true
                 )
 
@@ -130,7 +147,7 @@ fun LoginScreen(
                 ) {
                     Button(
                         onClick = {
-                            viewModel.viewModelScope.launch {
+                            googleViewModel.viewModelScope.launch {
                                 val signInIntentSender = googleAuthUiClient.signIn()
                                 launcher.launch(
                                     IntentSenderRequest.Builder(
@@ -140,15 +157,44 @@ fun LoginScreen(
                             }
                         },
                     ) {
-                        Text(text = "Sign in")
+                        Text(text = "Iniciar Sesión con Google")
                     }
 
                     Button(
                         onClick = {
-                            navController.navigate(route = Routes.SearchScreen.route)
+                            userViewModel.createIfNotExists(
+                                userEmail = null,
+                                userName = userName,
+                                userPassword = userPassword
+                            ) {
+                                navController.navigate(route = Routes.SearchScreen.route)
+                            }
                         },
+                        modifier = Modifier.padding(top = 16.dp)
                     ) {
-                        Text(text = "Get Token")
+                        Text(text = "Registrarse")
+                    }
+
+                    Button(
+                        onClick = {
+                            coroutineScope.launch {
+                                val isValid = userViewModel.verifyUserCredentials(userName, userPassword)
+                                withContext(Dispatchers.Main) {
+                                    if (isValid) {
+                                        navController.navigate(route = Routes.SearchScreen.route)
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "Credenciales incorrectas",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                                }
+                            }
+                        },
+                        modifier = Modifier.padding(top = 16.dp)
+                    ) {
+                        Text(text = "Iniciar Sesión")
                     }
                 }
             }

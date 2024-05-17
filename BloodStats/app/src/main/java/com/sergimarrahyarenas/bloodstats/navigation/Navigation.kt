@@ -23,11 +23,12 @@ import com.sergimarrahyarenas.bloodstats.ui.screens.SearchScreen
 import com.sergimarrahyarenas.bloodstats.ui.screens.SplashScreen
 import com.sergimarrahyarenas.bloodstats.viewmodel.BlizzardViewModel
 import com.sergimarrahyarenas.bloodstats.viewmodel.GoogleViewModel
+import com.sergimarrahyarenas.bloodstats.viewmodel.UserViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
 @Composable
-fun Navigation(context: Context) {
+fun Navigation(userViewModel: UserViewModel, context: Context) {
     val navController = rememberNavController()
 
     val coroutineScope = CoroutineScope(Dispatchers.IO)
@@ -60,10 +61,11 @@ fun Navigation(context: Context) {
         ) {
             LoginScreen(
                 navController = navController,
-                googleAuthUiClient = googleAuthUiClient,
+                googleViewModel = googleViewModel,
                 blizzardViewModel = blizzardViewModel,
+                userViewModel = userViewModel,
+                googleAuthUiClient = googleAuthUiClient,
                 context = context,
-                viewModel = googleViewModel,
                 coroutineScope = coroutineScope
             )
         }
