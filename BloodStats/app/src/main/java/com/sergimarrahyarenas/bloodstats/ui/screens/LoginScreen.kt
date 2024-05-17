@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.sergimarrahyarenas.bloodstats.common.CustomScaffold
+import com.sergimarrahyarenas.bloodstats.ui.common.CustomScaffold
 import com.sergimarrahyarenas.bloodstats.navigation.Routes
 import com.sergimarrahyarenas.bloodstats.api.googlemanagement.sign_in.GoogleAuthUiClient
 import com.sergimarrahyarenas.bloodstats.viewmodel.BlizzardViewModel

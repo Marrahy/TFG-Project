@@ -13,6 +13,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.sergimarrahyarenas.bloodstats.viewmodel.BlizzardViewModel
-import com.sergimarrahyarenas.bloodstats.common.CustomScaffold
+import com.sergimarrahyarenas.bloodstats.ui.common.CustomScaffold
 import com.sergimarrahyarenas.bloodstats.navigation.Routes
 import com.sergimarrahyarenas.bloodstats.api.googlemanagement.sign_in.GoogleAuthUiClient
 import kotlinx.coroutines.CoroutineScope
@@ -88,7 +90,7 @@ fun CharacterEquipmentScreen(
                                         navController.navigate(route = Routes.CharacterGuildScreen.route)
                                         characterProfileSummary?.guild?.name?.let {
                                             blizzardViewModel.loadCharacterGuildRoster(
-                                                it, characterProfileSummary!!.realm.name)
+                                                it, characterProfileSummary!!.realm.slug)
                                         }
                                     }
                                     2 -> navController.navigate(route = Routes.CharacterSpecializationScreen.route)
@@ -111,7 +113,7 @@ fun CharacterEquipmentScreen(
                         items(it) { itemEquipped ->
                             characterEquipment!![itemEquipped]?.name?.let { name ->
                                 AnnotatedString(
-                                    name
+                                    text = name
                                 )
                             }?.let { annotatedString ->
                                 Row(
@@ -119,12 +121,15 @@ fun CharacterEquipmentScreen(
                                     horizontalArrangement = Arrangement.Center
                                 ) {
                                     AsyncImage(
-                                        model = characterEquipmentMedia?.get(itemEquipped)?.assets?.get(0)?.value,
+                                        model = characterEquipmentMedia?.get(itemEquipped)?.assets?.get(0)?.value ?: Text(
+                                            text = "Cargando..."
+                                        ),
                                         contentDescription = "Item Media",
                                         modifier = Modifier
                                             .clip(CircleShape)
                                             .size(width = 50.dp, height = 50.dp)
                                     )
+
                                     Spacer(modifier = Modifier.padding(8.dp))
                                     ClickableText(text = annotatedString) {
                                         navController.navigate(route = Routes.ItemDataScreen.route)

@@ -3,12 +3,14 @@ package com.sergimarrahyarenas.bloodstats.ui.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,11 +19,13 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.sergimarrahyarenas.bloodstats.R
 import com.sergimarrahyarenas.bloodstats.api.googlemanagement.sign_in.GoogleAuthUiClient
-import com.sergimarrahyarenas.bloodstats.common.CustomScaffold
+import com.sergimarrahyarenas.bloodstats.ui.common.CustomScaffold
 import com.sergimarrahyarenas.bloodstats.navigation.Routes
 import com.sergimarrahyarenas.bloodstats.viewmodel.BlizzardViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -35,10 +39,10 @@ fun CharacterGuildScreen(
 ) {
     val characterGuild by blizzardViewModel.characterGuildRoster.observeAsState()
     val characterProfileSummary by blizzardViewModel.characterProfileSummary.observeAsState()
-    val buttonList = listOf(
+    val listOfMembersMedia by blizzardViewModel.membersMedia.observeAsState()
+        val buttonList = listOf(
         "Atributos", "Equipment", "Especialización", "Mazmorras"
     )
-
 
     CustomScaffold(
         navController = navController,
@@ -97,7 +101,23 @@ fun CharacterGuildScreen(
                 ) {
                     characterGuild?.members?.size?.let {
                         items(it) { member ->
-                            Text(text = characterGuild!!.members[member].character.name)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceEvenly,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                ClickableText(
+                                    AnnotatedString(
+                                        text = characterGuild!!.members[member].character.name
+                                    )
+                                ) {
+                                    blizzardViewModel.loadCharacterProfileSummaryEquipmentMedia(
+                                        characterGuild!!.members[member].character.name,
+                                        characterGuild!!.members[member].character.realm.slug
+                                    )
+                                    navController.navigate(route = Routes.CharacterEquipmentScreen.route)
+                                }
+                            }
                         }
                     }
                 }

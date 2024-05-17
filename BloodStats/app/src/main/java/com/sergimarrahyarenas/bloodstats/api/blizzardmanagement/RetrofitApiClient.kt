@@ -14,7 +14,6 @@ import com.sergimarrahyarenas.bloodstats.models.characterprofilesummary.Characte
 import com.sergimarrahyarenas.bloodstats.models.characterequipment.CharacterEquipment
 import com.sergimarrahyarenas.bloodstats.models.characterguildroster.CharacterGuildRoster
 import com.sergimarrahyarenas.bloodstats.models.charactermedia.CharacterMedia
-import com.sergimarrahyarenas.bloodstats.models.realm.Realm
 import com.sergimarrahyarenas.bloodstats.models.characterspecialization.CharacterSpecialization
 import com.sergimarrahyarenas.bloodstats.models.characterstatistics.CharacterStatistics
 import com.sergimarrahyarenas.bloodstats.models.itemdata.ItemData
@@ -69,7 +68,7 @@ object RetrofitInstance {
     }.await()
 
     suspend fun getCharacterGuildRoster(accessToken: String, name: String, realm: String): CharacterGuildRoster? = CoroutineScope(Dispatchers.IO).async {
-        val response = retrofit(BASE_DATA_URL).getCharacterGuildRoster(accessToken = "$BEARER $accessToken", characterName = name, realmSlug = realm)
+        val response = retrofit(BASE_DATA_URL).getCharacterGuildRoster(accessToken = "$BEARER $accessToken", characterName = name.lowercase(), realmSlug = realm)
         Log.d("RESPONSE getCharacterGuildRoster: ", "$response")
         if (response.isSuccessful) response.body() else null
     }.await()
@@ -80,8 +79,8 @@ object RetrofitInstance {
         if (response.isSuccessful) response.body() else null
     }.await()
 
-    suspend fun getCharacterMedia(accessToken: String, name: String, realm: String?): CharacterMedia? = CoroutineScope(Dispatchers.IO).async {
-        val response = retrofit(BASE_PROFILE_URL).getCharacterMedia(accessToken = "$BEARER $accessToken", characterName = name.lowercase(), realm = realm)
+    suspend fun getCharacterMedia(accessToken: String, name: String, realmSlug: String?): CharacterMedia? = CoroutineScope(Dispatchers.IO).async {
+        val response = retrofit(BASE_PROFILE_URL).getCharacterMedia(accessToken = "$BEARER $accessToken", characterName = name.lowercase(), realm = realmSlug)
         Log.d("RESPONSE getCharacterMedia: ", "$response")
         if (response.isSuccessful) response.body() else null
     }.await()

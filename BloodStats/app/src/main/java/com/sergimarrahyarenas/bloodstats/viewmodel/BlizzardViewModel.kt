@@ -1,6 +1,5 @@
 package com.sergimarrahyarenas.bloodstats.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,7 +10,6 @@ import com.sergimarrahyarenas.bloodstats.models.characterequipment.CharacterEqui
 import com.sergimarrahyarenas.bloodstats.models.characterequipment.EquippedItem
 import com.sergimarrahyarenas.bloodstats.models.characterguildroster.CharacterGuildRoster
 import com.sergimarrahyarenas.bloodstats.models.charactermedia.CharacterMedia
-import com.sergimarrahyarenas.bloodstats.models.charactermedia.Realm
 import com.sergimarrahyarenas.bloodstats.models.characterprofilesummary.CharacterProfileSummary
 import com.sergimarrahyarenas.bloodstats.models.characterstatistics.CharacterStatistics
 import com.sergimarrahyarenas.bloodstats.models.itemdata.ItemData
@@ -23,17 +21,22 @@ import kotlinx.coroutines.launch
 
 class BlizzardViewModel : ViewModel() {
 
+    //Retrofit instance
     private val accessTokenService = RetrofitApiClient()
 
+    //Api is getting consumed
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
 
+    //Error at Api Response
     private val _responseError = MutableLiveData(false)
     val responseError: LiveData<Boolean> = _responseError
 
+    //Token
     private val _accessToken = MutableLiveData<String?>()
     val accessToken: LiveData<String?> = _accessToken
 
+    //Character Api
     private val _characterProfileSummary = MutableLiveData<CharacterProfileSummary?>()
     val characterProfileSummary: LiveData<CharacterProfileSummary?> = _characterProfileSummary
 
@@ -48,17 +51,26 @@ class BlizzardViewModel : ViewModel() {
     private val _characterGuildRoster = MutableLiveData<CharacterGuildRoster?>()
     val characterGuildRoster: LiveData<CharacterGuildRoster?> = _characterGuildRoster
 
-    private val _characterMedia = MutableLiveData<CharacterMedia?>()
-    val characterMedia: LiveData<CharacterMedia?> = _characterMedia
-
     private val _equippedItems = MutableLiveData<List<EquippedItem?>>()
     val equippedItems: LiveData<List<EquippedItem?>> = _equippedItems
 
+    //Item Api
     private val _itemData = MutableLiveData<ItemData?>()
     val itemData: LiveData<ItemData?> = _itemData
 
     private val _itemStats = MutableLiveData<List<ItemStats>>()
     val itemStats: LiveData<List<ItemStats>> = _itemStats
+
+    //Realm Api
+    private val _listOfRealms = MutableLiveData<List<RealmInfo>?>()
+    val listOfRealms: LiveData<List<RealmInfo>?> = _listOfRealms
+
+    //Entities Media Api
+    private val _characterMedia = MutableLiveData<CharacterMedia?>()
+    val characterMedia: LiveData<CharacterMedia?> = _characterMedia
+
+    private val _membersMedia = MutableLiveData<List<CharacterMedia?>?>()
+    val membersMedia: LiveData<List<CharacterMedia?>?> = _membersMedia
 
     private val _equippedItemsMedia = MutableLiveData<List<ItemMedia?>>()
     val equippedItemsMedia: LiveData<List<ItemMedia?>> = _equippedItemsMedia
@@ -66,10 +78,12 @@ class BlizzardViewModel : ViewModel() {
     private val _itemMedia = MutableLiveData<ItemMedia?>()
     val itemMedia: LiveData<ItemMedia?> = _itemMedia
 
-    private val _listOfRealms = MutableLiveData<List<RealmInfo>?>()
-    val listOfRealms: LiveData<List<RealmInfo>?> = _listOfRealms
 
-    fun getToken() {
+    /**
+     * This function makes a request to Blizzard's API and gets the Access Token for the OAuth 1.0
+     *
+     */
+    fun getAccessToken() {
         viewModelScope.launch(Dispatchers.IO) {
             _accessToken.postValue(
                 accessTokenService.getAccessTokenApiService()?.accessToken
@@ -77,6 +91,13 @@ class BlizzardViewModel : ViewModel() {
         }
     }
 
+    /**
+     * This function makes various retrofit request to Blizzard's API and gets the ProfileSummary, CharacterMedia,
+     * CharacterGuild, Character primary stat, CharacterEquipment and the CharacterMedia
+     *
+     * @param name Name of the searched character
+     * @param realm Realm of the searched character
+     */
     fun loadCharacterProfileSummaryEquipmentMedia(name: String, realm: String) {
         viewModelScope.launch(Dispatchers.IO) {
             _isLoading.postValue(true)
@@ -101,7 +122,7 @@ class BlizzardViewModel : ViewModel() {
                     accessTokenService.getCharacterMedia(
                         accessToken = accessToken.value!!,
                         name = name,
-                        realm = realm
+                        realmSlug = realm
                     )
                 )
 
@@ -115,19 +136,33 @@ class BlizzardViewModel : ViewModel() {
                     }
                 }
 
-                val equippedItemsMediaList = _characterEquipment.value?.equipped_items?.map { equippedItem ->
-                    equippedItem.media.id.let {
-                        accessTokenService.getItemMedia(
-                            accessToken = accessToken.value!!,
-                            itemId = it
-                        )
+                val equippedItemsMediaList =
+                    _characterEquipment.value?.equipped_items?.map { equippedItem ->
+                        equippedItem.media.id.let {
+                            accessTokenService.getItemMedia(
+                                accessToken = accessToken.value!!,
+                                itemId = it
+                            )
+                        }
                     }
-                }
                 _equippedItemsMedia.postValue(equippedItemsMediaList!!)
 
-                characterProfileSummary.value?.name?.let { loadCharacterStatistics(it, characterProfileSummary.value!!.realm.slug) }
-                characterProfileSummary.value?.guild?.let { loadCharacterGuildRoster(it.name, characterProfileSummary.value!!.realm.slug) }
+                characterProfileSummary.value?.name?.let {
+                    loadCharacterStatistics(
+                        it,
+                        characterProfileSummary.value!!.realm.slug
+                    )
+                }
+                characterProfileSummary.value?.guild?.let {
+                    loadCharacterGuildRoster(
+                        it.name,
+                        characterProfileSummary.value!!.realm.slug
+                    )
+                }
+
+                //Function that gets the character primary stat
                 getPrimaryAttribute()
+                loadMembersMedia()
                 _responseError.postValue(false)
             } catch (e: Exception) {
                 _responseError.postValue(true)
@@ -135,6 +170,13 @@ class BlizzardViewModel : ViewModel() {
             _isLoading.postValue(false)
         }
     }
+
+    /**
+     * This function makes a request to Blizzard's API to get the character stats
+     *
+     * @param name Name of the character searched
+     * @param realm Realm of the character searched
+     */
 
     private fun loadCharacterStatistics(name: String, realm: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -165,6 +207,24 @@ class BlizzardViewModel : ViewModel() {
                     realm = realm
                 )
             )
+        }
+    }
+
+    fun loadMembersMedia() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val listOfMembersMedia =
+                _characterGuildRoster.value?.members?.map { member ->
+                    member.character.name.let { name ->
+                        member.character.realm.slug.let { realmSlug ->
+                            accessTokenService.getCharacterMedia(
+                                accessToken = accessToken.value!!,
+                                name = name,
+                                realmSlug = realmSlug
+                            )
+                        }
+                    }
+                }
+            _membersMedia.postValue(listOfMembersMedia)
         }
     }
 

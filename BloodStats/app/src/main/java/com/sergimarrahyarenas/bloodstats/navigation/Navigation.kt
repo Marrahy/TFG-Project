@@ -6,9 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.auth.api.identity.Identity
-import com.sergimarrahyarenas.bloodstats.viewmodel.BlizzardViewModel
 import com.sergimarrahyarenas.bloodstats.api.googlemanagement.sign_in.GoogleAuthUiClient
-import com.sergimarrahyarenas.bloodstats.viewmodel.GoogleViewModel
 import com.sergimarrahyarenas.bloodstats.ui.screens.CharacterDungeonsScreen
 import com.sergimarrahyarenas.bloodstats.ui.screens.CharacterEquipmentScreen
 import com.sergimarrahyarenas.bloodstats.ui.screens.CharacterGuildScreen
@@ -23,6 +21,8 @@ import com.sergimarrahyarenas.bloodstats.ui.screens.ProfileScreen
 import com.sergimarrahyarenas.bloodstats.ui.screens.RegisterScreen
 import com.sergimarrahyarenas.bloodstats.ui.screens.SearchScreen
 import com.sergimarrahyarenas.bloodstats.ui.screens.SplashScreen
+import com.sergimarrahyarenas.bloodstats.viewmodel.BlizzardViewModel
+import com.sergimarrahyarenas.bloodstats.viewmodel.GoogleViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
@@ -126,7 +126,11 @@ fun Navigation(context: Context) {
         composable(
             route = Routes.CharacterSpecializationScreen.route
         ) {
-            CharacterSpecializationScreen(navController = navController)
+            CharacterSpecializationScreen(
+                navController = navController,
+                blizzardViewModel = blizzardViewModel,
+                googleAuthUiClient = googleAuthUiClient
+            )
         }
         composable(
             route = Routes.CharacterDungeonsScreen.route

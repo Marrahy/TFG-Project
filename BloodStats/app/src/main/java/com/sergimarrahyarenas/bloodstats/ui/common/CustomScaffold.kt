@@ -1,4 +1,4 @@
-package com.sergimarrahyarenas.bloodstats.common
+package com.sergimarrahyarenas.bloodstats.ui.common
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize

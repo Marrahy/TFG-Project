@@ -1,6 +1,7 @@
 package com.sergimarrahyarenas.bloodstats.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.sergimarrahyarenas.bloodstats.viewmodel.BlizzardViewModel
-import com.sergimarrahyarenas.bloodstats.common.CustomScaffold
+import com.sergimarrahyarenas.bloodstats.ui.common.CustomScaffold
 import com.sergimarrahyarenas.bloodstats.models.characterstatistics.CharacterStatistics
 import com.sergimarrahyarenas.bloodstats.navigation.Routes
 import com.sergimarrahyarenas.bloodstats.api.googlemanagement.sign_in.GoogleAuthUiClient
@@ -56,6 +57,7 @@ fun CharacterStatisticsScreen(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.clip(CircleShape)
                 )
+
                 Text(text = "Atributos Principales")
 
                 Stats(characterStatistics = characterStatistics, blizzardViewModel = blizzardViewModel)
