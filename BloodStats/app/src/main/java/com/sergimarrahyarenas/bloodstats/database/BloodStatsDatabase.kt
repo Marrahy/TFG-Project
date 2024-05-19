@@ -14,7 +14,7 @@ import com.sergimarrahyarenas.bloodstats.database.entities.UserFavoriteCrossRef
 
 @Database(
     entities = [UserEntity::class, PreferencesEntity::class, FavoriteEntity::class, UserFavoriteCrossRef::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -30,7 +30,7 @@ abstract class BloodStatsDatabase : RoomDatabase() {
                     context,
                     BloodStatsDatabase::class.java,
                     "bloodstats-db"
-                ).build().also { instance = it }
+                ).fallbackToDestructiveMigration().build().also { instance = it }
             }
         }
     }

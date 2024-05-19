@@ -1,6 +1,7 @@
 package com.sergimarrahyarenas.bloodstats.ui.screens
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,9 +10,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,55 +34,124 @@ import coil.compose.AsyncImage
 import com.sergimarrahyarenas.bloodstats.api.googlemanagement.sign_in.GoogleAuthUiClient
 import com.sergimarrahyarenas.bloodstats.viewmodel.GoogleViewModel
 import com.sergimarrahyarenas.bloodstats.api.googlemanagement.sign_in.UserData
+import com.sergimarrahyarenas.bloodstats.navigation.Routes
+import com.sergimarrahyarenas.bloodstats.ui.common.CustomScaffold
+import com.sergimarrahyarenas.bloodstats.viewmodel.UserViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun ProfileScreen(
     navController: NavController,
+    viewModel: GoogleViewModel,
+    userViewModel: UserViewModel,
     userData: UserData?,
     googleAuthUiClient: GoogleAuthUiClient,
     context: Context,
-    viewModel: GoogleViewModel
+    coroutineScope: CoroutineScope
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        if (userData?.profilePictureUrl != null) {
-            AsyncImage(
-                model = userData.profilePictureUrl,
-                contentDescription = "Profile picture",
-                modifier = Modifier
-                    .size(150.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-        if (userData?.username != null) {
-            Text(
-                text = userData.username,
-                textAlign = TextAlign.Center,
-                fontSize = 36.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-        Button(onClick = {
-            viewModel.viewModelScope.launch {
-                googleAuthUiClient.signOut()
-                Toast.makeText(
-                    context,
-                    "Signed out",
-                    Toast.LENGTH_LONG
-                ).show()
+    var showDialog by remember { mutableStateOf(false) }
 
-                navController.popBackStack()
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text(text = "Eliminar cuenta") },
+            text = { Text(text = "¿Estás seguro de que deseas eliminar la cuenta permanentemente?") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showDialog = false
+                        userViewModel.user.let {
+                            coroutineScope.launch {
+                                Log.d("user", "${userViewModel.user.value?.userUUID}")
+                                userViewModel.user.value?.let { userViewModel.deleteUser(it.userUUID) }
+                                googleAuthUiClient.signOut()
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        context,
+                                        "Cuenta eliminada",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                    navController.navigate(route = Routes.LoginScreen.route) {
+                                        popUpTo(Routes.ProfileScreen.route) { inclusive = true }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ) {
+                    Text(text = "Aceptar")
+                }
+            },
+            dismissButton = {
+                OutlinedButton(
+                    onClick = {
+                        showDialog = false
+                    }
+                ) {
+                    Text(text = "Cancelar")
+                }
+            }
+        )
+    }
+
+    CustomScaffold(
+        navController = navController,
+        googleAuthUiClient = googleAuthUiClient,
+        coroutineScope = coroutineScope,
+        content = {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                if (userData?.profilePictureUrl != null) {
+                    AsyncImage(
+                        model = userData.profilePictureUrl,
+                        contentDescription = "Profile picture",
+                        modifier = Modifier
+                            .size(150.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+                if (userData?.username != null) {
+                    Text(
+                        text = userData.username,
+                        textAlign = TextAlign.Center,
+                        fontSize = 36.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+                Button(onClick = {
+                    viewModel.viewModelScope.launch {
+                        googleAuthUiClient.signOut()
+                        Toast.makeText(
+                            context,
+                            "Signed out",
+                            Toast.LENGTH_LONG
+                        ).show()
+
+                        navController.popBackStack()
+                    }
+                }
+                ) {
+                    Text(text = "Sign out")
+                }
+
+                Button(
+                    onClick = {
+                        showDialog = true
+                    }
+                ) {
+                    Text(text = "Eliminar cuenta")
+                }
             }
         }
-        ) {
-            Text(text = "Sign out")
-        }
-    }
+    )
 }

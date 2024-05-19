@@ -49,6 +49,9 @@ interface UserDao {
     @Query("SELECT * FROM user WHERE user_email = :userEmail")
     suspend fun getUserByEmail(userEmail: String): UserEntity?
 
+    @Query("SELECT userUUID FROM user WHERE user_name = :userName")
+    suspend fun getUserUUID(userName: String): String
+
     @Transaction
     @Query("SELECT * FROM user WHERE userUUID = :userId")
     suspend fun getUserWithPreferences(userId: String): UserWithPreferences?

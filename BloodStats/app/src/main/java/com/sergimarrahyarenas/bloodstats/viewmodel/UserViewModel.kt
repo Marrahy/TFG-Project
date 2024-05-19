@@ -1,6 +1,8 @@
 package com.sergimarrahyarenas.bloodstats.viewmodel
 
 import android.content.Context
+import android.database.sqlite.SQLiteConstraintException
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -26,23 +28,21 @@ class UserViewModel(context: Context) : ViewModel() {
     private val _userWithFavorites = MutableLiveData<UserWithFavorites?>()
     val userWithFavorites: LiveData<UserWithFavorites?> = _userWithFavorites
 
-    private val _onError = MutableLiveData<Boolean>()
-    val onError: LiveData<Boolean> = _onError
+    private val _user = MutableLiveData<UserEntity?>()
+    val user: LiveData<UserEntity?> = _user
 
-    fun addUserWithPreferencesAndFavorite(user: UserEntity) {
-        viewModelScope.launch(Dispatchers.IO) {
-            database.withTransaction {
-                userDao.insertUser(user)
-
-                val preferences = PreferencesEntity(userId = user.userUUID, theme = "light")
-                userDao.insertPreferences(preferences)
-            }
-        }
-    }
+    private val _onUserExistsError = MutableLiveData<Boolean>()
+    val onUserExistsError: LiveData<Boolean> = _onUserExistsError
 
     suspend fun verifyUserCredentials(userName: String, userPassword: String): Boolean {
         val user = database.userDao().getUserByName(userName)
+        _user.postValue(user)
         return user?.userPassword == userPassword
+    }
+
+    suspend fun checkIfUserExists(userName: String): Boolean {
+        val user = database.userDao().getUserByName(userName)
+        return user == null
     }
 
     fun createIfNotExists(
@@ -52,27 +52,42 @@ class UserViewModel(context: Context) : ViewModel() {
         onResult: (UserEntity) -> Unit
     ) {
         viewModelScope.launch(Dispatchers.IO) {
-            val existingUser = userEmail?.let { database.userDao().getUserByEmail(it) }
-            if (existingUser == null) {
-                val user = UserEntity(
-                    userName = userName,
-                    userPassword = userPassword,
-                    userEmail = userEmail
-                )
-                database.withTransaction {
-                    userDao.insertUser(user)
-                    val preferences = PreferencesEntity(userId = user.userUUID, theme = "light")
-                    userDao.insertPreferences(preferences)
+            try {
+                val existingUser = userEmail?.let { database.userDao().getUserByEmail(it) }
+                if (existingUser == null) {
+                    val user = UserEntity(
+                        userName = userName,
+                        userPassword = userPassword,
+                        userEmail = userEmail
+                    )
+                    database.withTransaction {
+                        userDao.insertUser(user)
+                        val preferences = PreferencesEntity(userId = user.userUUID, theme = "light")
+                        userDao.insertPreferences(preferences)
+                    }
+
+                    withContext(Dispatchers.Main) {
+                        onResult(user)
+                        Log.d("user", "${user.userUUID} ${user.userName}")
+                        _user.postValue(user)
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        onResult(existingUser)
+                    }
                 }
+            } catch (e: SQLiteConstraintException) {
                 withContext(Dispatchers.Main) {
-                    onResult(user)
+                    _onUserExistsError.postValue(true)
                 }
-            } else {
+            } catch (e: Exception) {
+                e.printStackTrace()
                 withContext(Dispatchers.Main) {
-                    onResult(existingUser)
+                    _onUserExistsError.postValue(true)
                 }
             }
         }
+        _onUserExistsError.postValue(false)
     }
 
     fun getUserWithPreferences(userId: String) {

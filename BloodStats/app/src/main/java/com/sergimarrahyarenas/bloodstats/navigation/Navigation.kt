@@ -102,7 +102,9 @@ fun Navigation(userViewModel: UserViewModel, context: Context) {
                 userData = googleAuthUiClient.getSignInUser(),
                 googleAuthUiClient = googleAuthUiClient,
                 context = context,
-                viewModel = googleViewModel
+                viewModel = googleViewModel,
+                userViewModel = userViewModel,
+                coroutineScope = coroutineScope
             )
         }
         composable(
