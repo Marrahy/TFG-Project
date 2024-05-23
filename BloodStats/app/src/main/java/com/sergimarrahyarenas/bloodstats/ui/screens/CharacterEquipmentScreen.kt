@@ -1,5 +1,7 @@
 package com.sergimarrahyarenas.bloodstats.ui.screens
 
+import android.content.Context
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,11 +10,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,10 +34,14 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.sergimarrahyarenas.bloodstats.viewmodel.BlizzardViewModel
-import com.sergimarrahyarenas.bloodstats.ui.common.CustomScaffold
-import com.sergimarrahyarenas.bloodstats.navigation.Routes
 import com.sergimarrahyarenas.bloodstats.api.googlemanagement.sign_in.GoogleAuthUiClient
+import com.sergimarrahyarenas.bloodstats.models.characterequipment.CharacterEquipment
+import com.sergimarrahyarenas.bloodstats.models.characterequipment.EquippedItem
+import com.sergimarrahyarenas.bloodstats.models.itemmedia.ItemMedia
+import com.sergimarrahyarenas.bloodstats.navigation.Routes
+import com.sergimarrahyarenas.bloodstats.ui.common.CustomScaffold
+import com.sergimarrahyarenas.bloodstats.ui.common.DynamicButton
+import com.sergimarrahyarenas.bloodstats.viewmodel.BlizzardViewModel
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
@@ -38,20 +49,20 @@ fun CharacterEquipmentScreen(
     blizzardViewModel: BlizzardViewModel,
     navController: NavController,
     googleAuthUiClient: GoogleAuthUiClient,
-    coroutineScope: CoroutineScope
+    coroutineScope: CoroutineScope,
+    context: Context
 ) {
     CustomScaffold(
         navController = navController,
         googleAuthUiClient = googleAuthUiClient,
         coroutineScope = coroutineScope,
+        context = context,
         content = {
             val characterProfileSummary by blizzardViewModel.characterProfileSummary.observeAsState()
             val characterMedia by blizzardViewModel.characterMedia.observeAsState()
             val characterEquipment by blizzardViewModel.equippedItems.observeAsState()
             val characterEquipmentMedia by blizzardViewModel.equippedItemsMedia.observeAsState()
-            val buttonList = listOf(
-                "Atributos", "Clan", "Especialización", "Mazmorras"
-            )
+            val characterActiveSpecialization by blizzardViewModel.characterActiveSpecialization.observeAsState()
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -76,72 +87,93 @@ fun CharacterEquipmentScreen(
                         .clip(CircleShape)
                         .size(width = 150.dp, height = 150.dp)
                 )
-                Spacer(modifier = Modifier.padding(8.dp))
-                LazyRow(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                ) {
-                    items(buttonList.size) { index ->
-                        Button(
-                            onClick = {
-                                when(index) {
-                                    0 -> navController.navigate(route = Routes.CharacterStatisticsScreen.route)
-                                    1 -> {
-                                        navController.navigate(route = Routes.CharacterGuildScreen.route)
-                                        characterProfileSummary?.guild?.name?.let {
-                                            blizzardViewModel.loadCharacterGuildRoster(
-                                                it, characterProfileSummary!!.realm.slug)
-                                        }
-                                    }
-                                    2 -> navController.navigate(route = Routes.CharacterSpecializationScreen.route)
-                                    3 -> navController.navigate(route = Routes.CharacterDungeonsScreen.route)
-                                }
-                            },
-                            modifier = Modifier
-                                .padding(8.dp)
-                                .fillMaxWidth()
-                        ) {
-                            Text(text = buttonList[index])
-                        }
-                    }
-                }
-                LazyColumn(
-                    verticalArrangement = Arrangement.SpaceEvenly,
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    characterEquipment?.size?.let {
-                        items(it) { itemEquipped ->
-                            characterEquipment!![itemEquipped]?.name?.let { name ->
-                                AnnotatedString(
-                                    text = name
-                                )
-                            }?.let { annotatedString ->
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.Center
-                                ) {
-                                    AsyncImage(
-                                        model = characterEquipmentMedia?.get(itemEquipped)?.assets?.get(0)?.value ?: Text(
-                                            text = "Cargando..."
-                                        ),
-                                        contentDescription = "Item Media",
-                                        modifier = Modifier
-                                            .clip(CircleShape)
-                                            .size(width = 50.dp, height = 50.dp)
-                                    )
 
-                                    Spacer(modifier = Modifier.padding(8.dp))
-                                    ClickableText(text = annotatedString) {
-                                        navController.navigate(route = Routes.ItemDataScreen.route)
-                                    }
-                                }
-                                Spacer(modifier = Modifier.padding(8.dp))
-                            }
+                Spacer(modifier = Modifier.padding(8.dp))
+
+                DynamicButton(
+                    currentScreen = Routes.CharacterEquipmentScreen.route,
+                    navController = navController,
+                    blizzardViewModel = blizzardViewModel,
+                    characterProfileSummary = characterProfileSummary,
+                    characterActiveSpecialization = characterActiveSpecialization
+                )
+                    characterEquipment?.let { equipment ->
+                        characterEquipmentMedia?.let { equipmentMedia ->
+                            CharacterEquipmentList(
+                                navController = navController,
+                                characterEquipment = equipment,
+                                characterEquipmentMedia = equipmentMedia
+                            )
                         }
-                    }
+                    } ?: run {
+                        CircularProgressIndicator(
+                            modifier = Modifier.padding(16.dp)
+                        )
+                        Text(text = "Cargando Equipo...")
                 }
             }
         }
     )
+}
+
+@Composable
+fun EquipmentItemCard(
+    item: EquippedItem,
+    itemMediaUrl: String?,
+    navController: NavController
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clickable {
+                navController.navigate(route = Routes.ItemDataScreen.route)
+            },
+        shape = MaterialTheme.shapes.medium,
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start,
+            modifier = Modifier.padding(16.dp)
+        ) {
+            AsyncImage(
+                model = itemMediaUrl ?: "Cargando...",
+                contentDescription = "Item Media",
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .size(50.dp)
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Text(text = item.name)
+        }
+    }
+}
+
+@Composable
+fun CharacterEquipmentList(
+    navController: NavController,
+    characterEquipment: List<EquippedItem?>,
+    characterEquipmentMedia: List<ItemMedia?>
+) {
+    LazyColumn(
+        verticalArrangement = Arrangement.SpaceEvenly,
+        horizontalAlignment = Alignment.Start
+    ) {
+        items(characterEquipment.size) { item ->
+            val itemEquipped = characterEquipment[item]
+            val itemMediaUrl = characterEquipmentMedia.getOrNull(item)
+
+            if (itemEquipped != null) {
+                EquipmentItemCard(
+                    item = itemEquipped,
+                    itemMediaUrl = itemMediaUrl?.assets?.get(0)?.value,
+                    navController = navController
+                )
+            }
+        }
+    }
 }
 

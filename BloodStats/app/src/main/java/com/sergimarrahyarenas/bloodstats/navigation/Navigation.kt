@@ -86,7 +86,8 @@ fun Navigation(userViewModel: UserViewModel, context: Context) {
                 blizzardViewModel = blizzardViewModel,
                 navController = navController,
                 googleAuthUiClient = googleAuthUiClient,
-                coroutineScope = coroutineScope
+                coroutineScope = coroutineScope,
+                context = context
             )
         }
         composable(
@@ -112,9 +113,11 @@ fun Navigation(userViewModel: UserViewModel, context: Context) {
         ) {
             CharacterStatisticsScreen(
                 blizzardViewModel = blizzardViewModel,
+                userViewModel = userViewModel,
                 navController = navController,
                 googleAuthUiClient = googleAuthUiClient,
-                coroutineScope = coroutineScope
+                coroutineScope = coroutineScope,
+                context = context
             )
         }
         composable(
@@ -124,7 +127,8 @@ fun Navigation(userViewModel: UserViewModel, context: Context) {
                 blizzardViewModel = blizzardViewModel,
                 navController = navController,
                 googleAuthUiClient = googleAuthUiClient,
-                coroutineScope = coroutineScope
+                coroutineScope = coroutineScope,
+                context = context
             )
         }
         composable(
@@ -133,13 +137,18 @@ fun Navigation(userViewModel: UserViewModel, context: Context) {
             CharacterSpecializationScreen(
                 navController = navController,
                 blizzardViewModel = blizzardViewModel,
-                googleAuthUiClient = googleAuthUiClient
+                googleAuthUiClient = googleAuthUiClient,
+                coroutineScope = coroutineScope,
+                context = context
             )
         }
         composable(
             route = Routes.CharacterDungeonsScreen.route
         ) {
-            CharacterDungeonsScreen(navController = navController)
+            CharacterDungeonsScreen(
+                navController = navController,
+                blizzardViewModel = blizzardViewModel
+            )
         }
         composable(
             route = Routes.CharacterGuildScreen.route
@@ -148,7 +157,8 @@ fun Navigation(userViewModel: UserViewModel, context: Context) {
                 blizzardViewModel = blizzardViewModel,
                 googleAuthUiClient = googleAuthUiClient,
                 navController = navController,
-                coroutineScope = coroutineScope
+                coroutineScope = coroutineScope,
+                context = context
             )
         }
         composable(
@@ -158,7 +168,8 @@ fun Navigation(userViewModel: UserViewModel, context: Context) {
                 navController = navController,
                 blizzardViewModel = blizzardViewModel,
                 googleAuthUiClient = googleAuthUiClient,
-                coroutineScope = coroutineScope
+                coroutineScope = coroutineScope,
+                context = context
             )
         }
         composable(

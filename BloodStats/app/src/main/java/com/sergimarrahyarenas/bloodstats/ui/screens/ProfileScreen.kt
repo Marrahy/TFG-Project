@@ -1,20 +1,25 @@
 package com.sergimarrahyarenas.bloodstats.ui.screens
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -32,10 +37,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.sergimarrahyarenas.bloodstats.api.googlemanagement.sign_in.GoogleAuthUiClient
-import com.sergimarrahyarenas.bloodstats.viewmodel.GoogleViewModel
 import com.sergimarrahyarenas.bloodstats.api.googlemanagement.sign_in.UserData
 import com.sergimarrahyarenas.bloodstats.navigation.Routes
 import com.sergimarrahyarenas.bloodstats.ui.common.CustomScaffold
+import com.sergimarrahyarenas.bloodstats.viewmodel.GoogleViewModel
 import com.sergimarrahyarenas.bloodstats.viewmodel.UserViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -53,6 +58,13 @@ fun ProfileScreen(
     coroutineScope: CoroutineScope
 ) {
     var showDialog by remember { mutableStateOf(false) }
+    val userWithFavorites by userViewModel.userWithFavorites.observeAsState()
+
+    LaunchedEffect(key1 = userData?.userId) {
+        userData?.userId?.let { userId ->
+            userViewModel.getUserWithPreferences(userId)
+        }
+    }
 
     if (showDialog) {
         AlertDialog(
@@ -65,8 +77,12 @@ fun ProfileScreen(
                         showDialog = false
                         userViewModel.user.let {
                             coroutineScope.launch {
-                                Log.d("user", "${userViewModel.user.value?.userUUID}")
-                                userViewModel.user.value?.let { userViewModel.deleteUser(it.userUUID) }
+                                userViewModel.user.value?.let {
+                                    userViewModel.deleteUser(
+                                        it.userUUID,
+                                        context = context
+                                    )
+                                }
                                 googleAuthUiClient.signOut()
                                 withContext(Dispatchers.Main) {
                                     Toast.makeText(
@@ -80,7 +96,8 @@ fun ProfileScreen(
                                 }
                             }
                         }
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.onErrorContainer)
                 ) {
                     Text(text = "Aceptar")
                 }
@@ -89,7 +106,8 @@ fun ProfileScreen(
                 OutlinedButton(
                     onClick = {
                         showDialog = false
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
                 ) {
                     Text(text = "Cancelar")
                 }
@@ -101,13 +119,13 @@ fun ProfileScreen(
         navController = navController,
         googleAuthUiClient = googleAuthUiClient,
         coroutineScope = coroutineScope,
+        context = context,
         content = {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
                 if (userData?.profilePictureUrl != null) {
                     AsyncImage(
                         model = userData.profilePictureUrl,
@@ -126,28 +144,44 @@ fun ProfileScreen(
                         fontSize = 36.sp,
                         fontWeight = FontWeight.SemiBold
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
                 }
-                Button(onClick = {
-                    viewModel.viewModelScope.launch {
-                        googleAuthUiClient.signOut()
-                        Toast.makeText(
-                            context,
-                            "Signed out",
-                            Toast.LENGTH_LONG
-                        ).show()
-
-                        navController.popBackStack()
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(text = "Favoritos")
+                userWithFavorites?.favorites?.let { favorites ->
+                    LazyColumn {
+                        items(favorites) { favorite ->
+                            Text(
+                                text = "${favorite.characterName} - ${favorite.characterRealmSlug} - ${favorite.characterMythicRating}",
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(8.dp)
+                            )
+                        }
                     }
                 }
+                Button(
+                    onClick = {
+                        viewModel.viewModelScope.launch {
+                            googleAuthUiClient.signOut()
+                            Toast.makeText(
+                                context,
+                                "Sesión cerrada",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            navController.navigate(route = Routes.LoginScreen.route) {
+                                popUpTo(route = Routes.LoginScreen.route) { inclusive = true }
+                            }
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary)
                 ) {
-                    Text(text = "Sign out")
+                    Text(text = "Cerrar sesión")
                 }
 
                 Button(
                     onClick = {
                         showDialog = true
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.onErrorContainer)
                 ) {
                     Text(text = "Eliminar cuenta")
                 }

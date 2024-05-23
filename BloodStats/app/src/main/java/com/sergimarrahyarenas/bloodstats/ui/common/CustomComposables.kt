@@ -1,27 +1,26 @@
 package com.sergimarrahyarenas.bloodstats.ui.common
 
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import android.content.Context
+import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -31,17 +30,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
 import com.sergimarrahyarenas.bloodstats.api.googlemanagement.sign_in.GoogleAuthUiClient
-import com.sergimarrahyarenas.bloodstats.models.charactermedia.CharacterMedia
+import com.sergimarrahyarenas.bloodstats.models.characterprofilesummary.CharacterProfileSummary
 import com.sergimarrahyarenas.bloodstats.navigation.Routes
+import com.sergimarrahyarenas.bloodstats.preferences.SharedPreferencesUtils
+import com.sergimarrahyarenas.bloodstats.viewmodel.BlizzardViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -52,7 +48,8 @@ fun CustomScaffold(
     content: @Composable () -> Unit,
     navController: NavController,
     googleAuthUiClient: GoogleAuthUiClient,
-    coroutineScope: CoroutineScope
+    coroutineScope: CoroutineScope,
+    context: Context
     ) {
     Scaffold(
         topBar = {
@@ -105,6 +102,7 @@ fun CustomScaffold(
                             onClick = {
                                 coroutineScope.launch(Dispatchers.IO) {
                                     googleAuthUiClient.signOut()
+                                    SharedPreferencesUtils.clearUserUUID(context)
                                 }
                                 navController.navigate(route = Routes.LoginScreen.route)
                             },
@@ -128,83 +126,44 @@ fun CustomScaffold(
 }
 
 @Composable
-fun GridListSwitch(
-    listViewChecked: Boolean,
-    onValueChange: (Boolean) -> Unit
+fun DynamicButton(
+    currentScreen: String,
+    navController: NavController,
+    blizzardViewModel: BlizzardViewModel,
+    characterProfileSummary: CharacterProfileSummary?,
+    characterActiveSpecialization: String?,
 ) {
-    Row(
+    val buttonList = allScreens.filter { it != currentScreen }
+
+    LazyRow(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
+        horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        Text(text = "Ver como: Cuadrícula")
-        Switch(
-            checked = listViewChecked,
-            onCheckedChange = { onValueChange(it) },
-            modifier = Modifier.padding(horizontal = 8.dp)
-        )
-        Text(text = "Lista")
-    }
-}
-
-//@Composable
-//fun EntitiesVerticalGrid(item: ItemMedia, items: List<ItemData>) {
-//    LazyVerticalGrid(
-//        columns = GridCells.Fixed(3),
-//        verticalArrangement = Arrangement.spacedBy(4.dp),
-//        horizontalArrangement = Arrangement.spacedBy(4.dp)
-//    ) {
-//        items(items) { item ->
-//
-//        }
-//    }
-//}
-
-//@Composable
-//fun ItemInfoGreed(item: ItemMedia, itemInfo: ItemData) {
-//    Card(
-//        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-//        modifier = Modifier.padding(4.dp)
-//    ) {
-//        AsyncImage(
-//            model = item.assets[0].value,
-//            contentDescription = "Item Image",
-//            modifier = Modifier
-//                .clip(RoundedCornerShape(8.dp))
-//                .fillMaxSize(),
-//            contentScale = ContentScale.Crop
-//        )
-//        Text(
-//            text = "${itemInfo.results}",
-//            fontSize = 12.sp,
-//            maxLines = 1,
-//            softWrap = false,
-//            overflow = TextOverflow.Ellipsis,
-//            modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
-//        )
-//    }
-//}
-
-@Composable
-fun CharacterInfoGreed(character: CharacterMedia?) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-        modifier = Modifier.padding(4.dp)
-    ) {
-        AsyncImage(
-            model = character?.assets?.get(1),
-            contentDescription = "Character Image",
-            modifier = Modifier
-                .clip(RoundedCornerShape(8.dp))
-                .fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
-        Text(
-            text = "${character?.character?.name}",
-            fontSize = 12.sp,
-            maxLines = 1,
-            softWrap = false,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
-        )
+        items(buttonList) { screen ->
+            Button(
+                onClick = {
+                    ButtonNavigationManagement.handleNavigation(
+                        screen = screen,
+                        navController = navController,
+                        blizzardViewModel = blizzardViewModel,
+                        characterProfileSummary = characterProfileSummary,
+                        characterActiveSpecialization = characterActiveSpecialization,
+                    )
+                },
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth()
+            ) {
+                val screenName = when (screen) {
+                    Routes.CharacterEquipmentScreen.route -> "Equipamiento"
+                    Routes.CharacterGuildScreen.route -> "Clan"
+                    Routes.CharacterSpecializationScreen.route -> "Especialización"
+                    Routes.CharacterStatisticsScreen.route -> "Atributos"
+                    Routes.CharacterDungeonsScreen.route -> "Mazmorras"
+                    else -> ""
+                }
+                Text(text = screenName)
+            }
+        }
     }
 }

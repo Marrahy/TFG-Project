@@ -6,11 +6,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sergimarrahyarenas.bloodstats.api.blizzardmanagement.RetrofitApiClient
 import com.sergimarrahyarenas.bloodstats.data.CharacterClassSpecialization
+import com.sergimarrahyarenas.bloodstats.models.characermythickeystoneprofile.CharacterMythicKeystoneProfile
 import com.sergimarrahyarenas.bloodstats.models.characterequipment.CharacterEquipment
 import com.sergimarrahyarenas.bloodstats.models.characterequipment.EquippedItem
 import com.sergimarrahyarenas.bloodstats.models.characterguildroster.CharacterGuildRoster
 import com.sergimarrahyarenas.bloodstats.models.charactermedia.CharacterMedia
 import com.sergimarrahyarenas.bloodstats.models.characterprofilesummary.CharacterProfileSummary
+import com.sergimarrahyarenas.bloodstats.models.characterspecialization.SpellTooltip
 import com.sergimarrahyarenas.bloodstats.models.characterstatistics.CharacterStatistics
 import com.sergimarrahyarenas.bloodstats.models.itemdata.ItemData
 import com.sergimarrahyarenas.bloodstats.models.itemdata.ItemStats
@@ -45,14 +47,26 @@ class BlizzardViewModel : ViewModel() {
     private val _characterStatistics = MutableLiveData<CharacterStatistics?>()
     val characterStatistics: LiveData<CharacterStatistics?> = _characterStatistics
 
-    private val _characterSpecialization = MutableLiveData<String?>()
-    val characterSpecialization: LiveData<String?> = _characterSpecialization
+    private val _characterPrimaryStat = MutableLiveData<String?>()
+    val characterPrimaryStat: LiveData<String?> = _characterPrimaryStat
+
+    private val _characterActiveSpecialization = MutableLiveData<String?>()
+    val characterActiveSpecialization: LiveData<String?> = _characterActiveSpecialization
+
+    private val _listOfClassSpells = MutableLiveData<List<SpellTooltip?>>()
+    val listOfClassSpells: LiveData<List<SpellTooltip?>> = _listOfClassSpells
+
+    private val _listOfSpecSpells = MutableLiveData<List<SpellTooltip?>>()
+    val listOfSpecSpells: LiveData<List<SpellTooltip?>> = _listOfSpecSpells
 
     private val _characterGuildRoster = MutableLiveData<CharacterGuildRoster?>()
     val characterGuildRoster: LiveData<CharacterGuildRoster?> = _characterGuildRoster
 
     private val _equippedItems = MutableLiveData<List<EquippedItem?>>()
     val equippedItems: LiveData<List<EquippedItem?>> = _equippedItems
+
+    private val _characterMythicKeystoneProfile = MutableLiveData<CharacterMythicKeystoneProfile?>()
+    val characterMythicKeystoneProfile: LiveData<CharacterMythicKeystoneProfile?> = _characterMythicKeystoneProfile
 
     //Item Api
     private val _itemData = MutableLiveData<ItemData?>()
@@ -95,34 +109,34 @@ class BlizzardViewModel : ViewModel() {
      * This function makes various retrofit request to Blizzard's API and gets the ProfileSummary, CharacterMedia,
      * CharacterGuild, Character primary stat, CharacterEquipment and the CharacterMedia
      *
-     * @param name Name of the searched character
-     * @param realm Realm of the searched character
+     * @param characterName Name of the searched character
+     * @param realmSlug Realm of the searched character
      */
-    fun loadCharacterProfileSummaryEquipmentMedia(name: String, realm: String) {
+    fun loadCharacterProfileSummaryEquipmentMedia(characterName: String, realmSlug: String) {
         viewModelScope.launch(Dispatchers.IO) {
             _isLoading.postValue(true)
             try {
                 _characterProfileSummary.postValue(
                     accessTokenService.getCharacterProfileSummary(
                         accessToken = accessToken.value!!,
-                        name = name,
-                        realm = realm
+                        characterName = characterName,
+                        realmSlug = realmSlug
                     )
                 )
 
                 _characterEquipment.postValue(
                     accessTokenService.getCharacterEquipment(
                         accessToken = accessToken.value!!,
-                        name = name,
-                        realm = realm
+                        name = characterName,
+                        realm = realmSlug
                     )
                 )
 
                 _characterMedia.postValue(
                     accessTokenService.getCharacterMedia(
                         accessToken = accessToken.value!!,
-                        name = name,
-                        realmSlug = realm
+                        name = characterName,
+                        realmSlug = realmSlug
                     )
                 )
 
@@ -148,11 +162,12 @@ class BlizzardViewModel : ViewModel() {
                 _equippedItemsMedia.postValue(equippedItemsMediaList!!)
 
                 characterProfileSummary.value?.name?.let {
-                    loadCharacterStatistics(
+                    getCharacterStatistics(
                         it,
                         characterProfileSummary.value!!.realm.slug
                     )
                 }
+
                 characterProfileSummary.value?.guild?.let {
                     loadCharacterGuildRoster(
                         it.name,
@@ -160,33 +175,96 @@ class BlizzardViewModel : ViewModel() {
                     )
                 }
 
-                //Function that gets the character primary stat
+                if (_characterProfileSummary.value == null) {
+                    _responseError.postValue(true)
+                }
+
                 getPrimaryAttribute()
-                loadMembersMedia()
-                _responseError.postValue(false)
+                getMembersMedia()
+                getCharacterMythicKeystoneProfile(characterName = characterName, realmSlug = realmSlug)
             } catch (e: Exception) {
                 _responseError.postValue(true)
             }
             _isLoading.postValue(false)
+            _responseError.postValue(false)
         }
+    }
+
+    fun loadCharacterSpecialization(characterName: String, realmSlug: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _isLoading.postValue(true)
+            try {
+                val characterSpecialization = accessTokenService.getCharacterSpecialization(
+                    accessToken = accessToken.value!!,
+                    characterName = characterName,
+                    realmSlug = realmSlug
+                )
+
+                _characterActiveSpecialization.postValue(characterSpecialization?.active_specialization?.name)
+
+                val characterClassSpells = mutableListOf<SpellTooltip>()
+                val characterSpecSpells = mutableListOf<SpellTooltip>()
+
+                characterSpecialization?.specializations?.let { specialization ->
+                        specialization.map { selectedClassTalent ->
+                            selectedClassTalent.loadouts[0].selected_class_talents.map { classSpells ->
+                                classSpells.tooltip.spell_tooltip.let { characterClassSpells.add(it) }
+                            }
+                            selectedClassTalent.loadouts[0].selected_spec_talents.map { specSpells ->
+                                specSpells.tooltip.spell_tooltip.let { characterSpecSpells.add(it) }
+                            }
+                        }
+                    }
+
+                _listOfClassSpells.postValue(characterClassSpells)
+                _listOfSpecSpells.postValue(characterSpecSpells)
+
+                _responseError.postValue(false)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _responseError.postValue(true)
+            }
+        }
+        _isLoading.postValue(false)
+    }
+
+    private fun getCharacterMythicKeystoneProfile(characterName: String, realmSlug: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _isLoading.postValue(true)
+            try {
+                _characterMythicKeystoneProfile.postValue(
+                    accessTokenService.getCharacterMythicKeystoneProfile(
+                        accessToken = accessToken.value!!,
+                        name = characterName,
+                        realm = realmSlug
+                    )
+                )
+
+                _responseError.postValue(false)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _responseError.postValue(true)
+            }
+        }
+        _isLoading.postValue(false)
     }
 
     /**
      * This function makes a request to Blizzard's API to get the character stats
      *
-     * @param name Name of the character searched
-     * @param realm Realm of the character searched
+     * @param characterName Name of the character searched
+     * @param realmSlug Realm of the character searched
      */
 
-    private fun loadCharacterStatistics(name: String, realm: String) {
+    private fun getCharacterStatistics(characterName: String, realmSlug: String) {
         viewModelScope.launch(Dispatchers.IO) {
             _isLoading.postValue(true)
             try {
                 _characterStatistics.postValue(
                     accessTokenService.getCharacterStatisticsSummary(
                         accessToken = accessToken.value!!,
-                        name = name,
-                        realm = realm
+                        characterName = characterName,
+                        realmSlug = realmSlug
                     )
                 )
 
@@ -210,7 +288,7 @@ class BlizzardViewModel : ViewModel() {
         }
     }
 
-    fun loadMembersMedia() {
+    private fun getMembersMedia() {
         viewModelScope.launch(Dispatchers.IO) {
             val listOfMembersMedia =
                 _characterGuildRoster.value?.members?.map { member ->
@@ -243,17 +321,6 @@ class BlizzardViewModel : ViewModel() {
                     itemId = itemId
                 )
             )
-
-            for (stat in itemData.value?.preview_item?.stats!!) {
-                _itemStats.postValue(
-                    listOf(
-                        ItemStats(
-                            name = stat.type.name,
-                            display_string = stat.display.display_string,
-                        )
-                    )
-                )
-            }
         }
     }
 
@@ -277,6 +344,6 @@ class BlizzardViewModel : ViewModel() {
                 characterSpec
             )
         )
-        return _characterSpecialization.postValue(spec)
+        return _characterPrimaryStat.postValue(spec)
     }
 }

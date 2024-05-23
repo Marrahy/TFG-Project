@@ -1,5 +1,6 @@
 package com.sergimarrahyarenas.bloodstats.ui.screens
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,7 +22,8 @@ fun ItemDataScreen(
     navController: NavController,
     blizzardViewModel: BlizzardViewModel,
     googleAuthUiClient: GoogleAuthUiClient,
-    coroutineScope: CoroutineScope
+    coroutineScope: CoroutineScope,
+    context: Context
 ) {
     val itemData by blizzardViewModel.itemData.observeAsState()
     val itemMedia by blizzardViewModel.itemMedia.observeAsState()
@@ -31,6 +33,7 @@ fun ItemDataScreen(
         navController = navController,
         googleAuthUiClient = googleAuthUiClient,
         coroutineScope = coroutineScope,
+        context = context,
         content = {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,

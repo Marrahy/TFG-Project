@@ -1,5 +1,6 @@
 package com.sergimarrahyarenas.bloodstats.ui.screens
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,6 +28,7 @@ import com.sergimarrahyarenas.bloodstats.R
 import com.sergimarrahyarenas.bloodstats.api.googlemanagement.sign_in.GoogleAuthUiClient
 import com.sergimarrahyarenas.bloodstats.ui.common.CustomScaffold
 import com.sergimarrahyarenas.bloodstats.navigation.Routes
+import com.sergimarrahyarenas.bloodstats.ui.common.DynamicButton
 import com.sergimarrahyarenas.bloodstats.viewmodel.BlizzardViewModel
 import kotlinx.coroutines.CoroutineScope
 
@@ -35,19 +37,19 @@ fun CharacterGuildScreen(
     blizzardViewModel: BlizzardViewModel,
     googleAuthUiClient: GoogleAuthUiClient,
     navController: NavController,
-    coroutineScope: CoroutineScope
+    coroutineScope: CoroutineScope,
+    context: Context
 ) {
     val characterGuild by blizzardViewModel.characterGuildRoster.observeAsState()
     val characterProfileSummary by blizzardViewModel.characterProfileSummary.observeAsState()
+    val characterActiveSpecialization by blizzardViewModel.characterActiveSpecialization.observeAsState()
     val listOfMembersMedia by blizzardViewModel.membersMedia.observeAsState()
-        val buttonList = listOf(
-        "Atributos", "Equipment", "Especialización", "Mazmorras"
-    )
 
     CustomScaffold(
         navController = navController,
         googleAuthUiClient = googleAuthUiClient,
         coroutineScope = coroutineScope,
+        context = context,
         content = {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -72,28 +74,15 @@ fun CharacterGuildScreen(
                 Text(text = "Lista de miembros")
                 Spacer(modifier = Modifier.padding(8.dp))
                 Spacer(modifier = Modifier.padding(8.dp))
-                LazyRow(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                ) {
-                    items(buttonList.size) { index ->
-                        Button(
-                            onClick = {
-                                when(index) {
-                                    0 -> navController.navigate(route = Routes.CharacterStatisticsScreen.route)
-                                    1 -> navController.navigate(route = Routes.CharacterEquipmentScreen.route)
-                                    2 -> navController.navigate(route = Routes.CharacterSpecializationScreen.route)
-                                    3 -> navController.navigate(route = Routes.CharacterDungeonsScreen.route)
-                                }
-                            },
-                            modifier = Modifier
-                                .padding(8.dp)
-                                .fillMaxWidth()
-                        ) {
-                            Text(text = buttonList[index])
-                        }
-                    }
-                }
+
+                DynamicButton(
+                    currentScreen = Routes.CharacterGuildScreen.route,
+                    navController = navController,
+                    blizzardViewModel = blizzardViewModel,
+                    characterProfileSummary = characterProfileSummary,
+                    characterActiveSpecialization = characterActiveSpecialization
+                )
+
                 Spacer(modifier = Modifier.padding(8.dp))
                 LazyColumn(
                     verticalArrangement = Arrangement.Center,

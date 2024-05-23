@@ -73,7 +73,6 @@ data class CharacterClassSpecialization(
         )
 
         fun getAttribute(characterClassSpecialization: CharacterClassSpecialization): String? {
-            Log.d("attribute: ", "${attributeMap[characterClassSpecialization.characterClass]?.get(characterClassSpecialization.characterSpec)}")
             return attributeMap[characterClassSpecialization.characterClass]?.get(characterClassSpecialization.characterSpec)
         }
     }

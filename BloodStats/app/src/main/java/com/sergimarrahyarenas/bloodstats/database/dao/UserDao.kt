@@ -43,6 +43,9 @@ interface UserDao {
     @Query("DELETE FROM user WHERE userUUID = :userId")
     suspend fun deleteUserById(userId: String)
 
+    @Query("SELECT * FROM user WHERE userUUID = :userUUID")
+    suspend fun getUserByUUID(userUUID: String): UserEntity?
+
     @Query("SELECT * FROM user WHERE user_name = :userName")
     suspend fun getUserByName(userName: String): UserEntity?
 
@@ -51,6 +54,9 @@ interface UserDao {
 
     @Query("SELECT userUUID FROM user WHERE user_name = :userName")
     suspend fun getUserUUID(userName: String): String
+
+    @Query("SELECT * FROM favorite WHERE characterName = :characterName AND characterRealmSlug = :characterRealmSlug")
+    suspend fun getFavoriteByCharacterNameAndRealm(characterName: String, characterRealmSlug: String): FavoriteEntity?
 
     @Transaction
     @Query("SELECT * FROM user WHERE userUUID = :userId")

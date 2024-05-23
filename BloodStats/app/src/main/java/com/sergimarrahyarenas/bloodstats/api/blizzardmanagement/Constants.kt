@@ -10,7 +10,7 @@ object Constants {
     const val CHARACTER_MEDIA = "character-media"
     const val MYTHIC_KEYSTONE_PROFILE = "mythic-keystone-profile"
     const val ROSTER = "roster"
-    const val SPECIALIZATION = "specialization"
+    const val SPECIALIZATION = "specializations"
     const val ITEM_MEDIA = "item-media"
     const val EQUIPMENT = "equipment"
     const val STATISTICS = "statistics"
