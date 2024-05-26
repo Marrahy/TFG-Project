@@ -93,7 +93,11 @@ fun Navigation(userViewModel: UserViewModel, context: Context) {
         composable(
             route = Routes.LoadingScreen.route
         ) {
-            LoadingScreen(navController = navController)
+            LoadingScreen(
+                navController = navController,
+                blizzardViewModel = blizzardViewModel,
+                context = context
+            )
         }
         composable(
             route = Routes.ProfileScreen.route

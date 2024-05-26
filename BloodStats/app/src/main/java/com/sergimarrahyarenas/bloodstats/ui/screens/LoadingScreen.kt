@@ -1,6 +1,8 @@
 package com.sergimarrahyarenas.bloodstats.ui.screens
 
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,6 +14,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -19,13 +23,33 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.sergimarrahyarenas.bloodstats.navigation.Routes
+import com.sergimarrahyarenas.bloodstats.viewmodel.BlizzardViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 
 @Composable
-fun LoadingScreen(navController: NavController) {
-    LaunchedEffect(key1 = true) {
+fun LoadingScreen(
+    navController: NavController,
+    blizzardViewModel: BlizzardViewModel,
+    context: Context
+) {
+    val checkIfNull by blizzardViewModel.characterProfileSummary.observeAsState()
+
+    LaunchedEffect(checkIfNull) {
         delay(5500)
-        navController.navigate(route = Routes.CharacterEquipmentScreen.route)
+        if (checkIfNull?.name != null) {
+            navController.navigate(route = Routes.CharacterEquipmentScreen.route)
+        } else {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    context,
+                    "No se ha podido encontrar el personaje buscado",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+            navController.popBackStack()
+        }
     }
 
     Column(

@@ -2,6 +2,7 @@ package com.sergimarrahyarenas.bloodstats.ui.screens
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -29,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -58,6 +60,7 @@ fun ProfileScreen(
     coroutineScope: CoroutineScope
 ) {
     var showDialog by remember { mutableStateOf(false) }
+    val userAvatar by userViewModel.user.observeAsState()
     val userWithFavorites by userViewModel.userWithFavorites.observeAsState()
 
     LaunchedEffect(key1 = userData?.userId) {
@@ -136,6 +139,17 @@ fun ProfileScreen(
                         contentScale = ContentScale.Crop
                     )
                     Spacer(modifier = Modifier.height(16.dp))
+                } else {
+                    userAvatar?.avatarId?.let { painterResource(id = it) }?.let {
+                        Image(
+                            painter = it,
+                            contentDescription = "User Avatar",
+                            modifier = Modifier
+                                .size(150.dp)
+                                .clip(CircleShape),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
                 }
                 if (userData?.username != null) {
                     Text(

@@ -56,15 +56,6 @@ fun SearchScreen(
     var searchedEntity by remember { mutableStateOf("") }
     var realm by remember { mutableStateOf("") }
 
-
-    LaunchedEffect(responseError) {
-        if (responseError == true) {
-            showError = true
-        } else if (!responseError!! && searchedEntity.isNotEmpty() && realm != "Reino") {
-            showError = false
-        }
-    }
-
     LaunchedEffect(showError) {
         if (showError) {
             Toast.makeText(
@@ -93,12 +84,14 @@ fun SearchScreen(
                     onNameChange = { searchedEntity = it },
                     onRealmChange = { realm = it },
                     onClickPress = {
-                        if (!showError) {
-                            navController.navigate(route = Routes.CharacterEquipmentScreen.route)
+                        if (searchedEntity.isNotBlank() && realm.isNotBlank()) {
+                            navController.navigate(route = Routes.LoadingScreen.route)
                             blizzardViewModel.loadCharacterProfileSummaryEquipmentMedia(
                                 searchedEntity,
                                 realm
                             )
+                        } else {
+                            showError = !showError
                         }
                     }
                 )

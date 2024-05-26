@@ -8,6 +8,7 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -36,6 +40,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -93,18 +98,19 @@ fun LoginScreen(
                         )
                         googleViewModel.onSignInResult(signInResult)
                         val email = signInResult.data?.userEmail ?: return@launch
-                        val userName =
-                            signInResult.data.username ?: "defaultName_${UUID.randomUUID()}"
+                        val userName = signInResult.data.username ?: "defaultName_${UUID.randomUUID()}"
                         val userPassword = signInResult.data.userId
+                        val avatar = R.drawable.murlok
 
-                        userViewModel.createIfNotExists(
-                            userEmail = email,
-                            userName = userName,
-                            userPassword = userPassword,
-                            context = context
-                        ) {
-                            navController.navigate(route = Routes.SearchScreen.route)
-                        }
+                            userViewModel.createIfNotExists(
+                                userEmail = email,
+                                userName = userName,
+                                userPassword = userPassword,
+                                avatar = avatar,
+                                context = context
+                            ) {
+                                navController.navigate(route = Routes.SearchScreen.route)
+                            }
                     }
                 }
             }
@@ -149,6 +155,7 @@ fun LoginScreen(
             var userName by rememberSaveable() { mutableStateOf("") }
             var userPassword by rememberSaveable() { mutableStateOf("") }
             var passwordIsVisible by remember { mutableStateOf(false) }
+            var selectedAvatar by remember { mutableIntStateOf(R.drawable.murlok) }
 
             Box(
                 modifier = Modifier
@@ -167,6 +174,12 @@ fun LoginScreen(
                         .size(150.dp)
                         .clip(RoundedCornerShape(16.dp))
                 )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            AvatarSelector { avatar ->
+                selectedAvatar = avatar
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -225,7 +238,13 @@ fun LoginScreen(
                 Button(
                     onClick = {
                         coroutineScope.launch {
-                            verifyUser(userViewModel, userName, userPassword, navController, context)
+                            verifyUser(
+                                userViewModel,
+                                userName,
+                                userPassword,
+                                navController,
+                                context
+                            )
                         }
                     },
                     modifier = Modifier.padding(top = 16.dp),
@@ -249,6 +268,7 @@ fun LoginScreen(
                                         userEmail = null,
                                         userName = userName,
                                         userPassword = userPassword,
+                                        avatar = selectedAvatar,
                                         context = context
                                     ) {
                                         coroutineScope.launch {
@@ -279,7 +299,9 @@ fun LoginScreen(
                     Text(text = "Registrarse", color = MaterialTheme.colorScheme.onPrimary)
                 }
             }
+
             Spacer(modifier = Modifier.height(16.dp))
+
             Button(
                 onClick = {
                     googleViewModel.viewModelScope.launch {
@@ -319,6 +341,35 @@ suspend fun verifyUser(
                 "Nombre de usuario o contraseña incorrectos",
                 Toast.LENGTH_LONG
             ).show()
+        }
+    }
+}
+
+@Composable
+fun AvatarSelector(onAvatarSelected: (Int) -> Unit) {
+    val avatarList = listOf(
+        R.drawable.murlok,
+        R.drawable.frog,
+        R.drawable.hunter,
+        R.drawable.mage,
+        R.drawable.rogue,
+        R.drawable.shaman,
+        R.drawable.spacemurlok,
+        R.drawable.sylvanas,
+        R.drawable.warrior
+    )
+
+    LazyRow {
+        items(avatarList) { avatar ->
+            Image(
+                painter = painterResource(id = avatar),
+                contentDescription = "Avatar",
+                modifier = Modifier
+                    .size(96.dp)
+                    .clip(CircleShape)
+                    .clickable { onAvatarSelected(avatar) }
+                    .padding(4.dp)
+            )
         }
     }
 }

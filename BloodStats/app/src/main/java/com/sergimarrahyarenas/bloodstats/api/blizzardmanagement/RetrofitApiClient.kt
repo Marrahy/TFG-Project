@@ -45,7 +45,7 @@ object RetrofitInstance {
 
     suspend fun getCharacterProfileSummary(accessToken: String, characterName: String, realmSlug: String): CharacterProfileSummary? = CoroutineScope(Dispatchers.IO).async {
         val response = retrofit(BASE_PROFILE_URL).getCharacterProfileSummary(accessToken = "$BEARER $accessToken", characterName = characterName.lowercase(), realmSlug = realmSlug)
-        if (response.isSuccessful) response.body() else null
+        if (response.isSuccessful && response.code() != 404) response.body() else null
     }.await()
 
     suspend fun getCharacterStatisticsSummary(accessToken: String, characterName: String, realmSlug: String): CharacterStatistics? = CoroutineScope(Dispatchers.IO).async {

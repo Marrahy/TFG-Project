@@ -3,22 +3,28 @@ package com.sergimarrahyarenas.bloodstats.ui.screens
 import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
@@ -51,60 +57,94 @@ fun CharacterGuildScreen(
         coroutineScope = coroutineScope,
         context = context,
         content = {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxSize()
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
             ) {
-                characterGuild?.guild?.let { Text(text = it.name) }
-                Spacer(modifier = Modifier.padding(8.dp))
-
-                if ("ALLIANCE" == characterGuild?.guild?.faction?.type) {
-                    Image(
-                        painter = painterResource(id = R.drawable.alliancelogo),
-                        contentDescription = "Allianze Logo"
-                    )
-                } else {
-                    Image(
-                        painter = painterResource(id = R.drawable.hordelogo),
-                        contentDescription = "Horde Logo"
-                    )
-                }
-                
-                Text(text = "Lista de miembros")
-                Spacer(modifier = Modifier.padding(8.dp))
-                Spacer(modifier = Modifier.padding(8.dp))
-
-                DynamicButton(
-                    currentScreen = Routes.CharacterGuildScreen.route,
-                    navController = navController,
-                    blizzardViewModel = blizzardViewModel,
-                    characterProfileSummary = characterProfileSummary,
-                    characterActiveSpecialization = characterActiveSpecialization
+                Image(
+                    painter = painterResource(id = R.drawable.alliance),
+                    contentDescription = "Alliance Background",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
                 )
-
-                Spacer(modifier = Modifier.padding(8.dp))
-                LazyColumn(
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
                 ) {
-                    characterGuild?.members?.size?.let {
-                        items(it) { member ->
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceEvenly,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                ClickableText(
-                                    AnnotatedString(
-                                        text = characterGuild!!.members[member].character.name
-                                    )
-                                ) {
-                                    blizzardViewModel.loadCharacterProfileSummaryEquipmentMedia(
-                                        characterGuild!!.members[member].character.name,
-                                        characterGuild!!.members[member].character.realm.slug
-                                    )
-                                    navController.navigate(route = Routes.CharacterEquipmentScreen.route)
+                    characterGuild?.guild?.let { Text(text = it.name) }
+                    Spacer(modifier = Modifier.padding(8.dp))
+
+                    if ("ALLIANCE" == characterGuild?.guild?.faction?.type) {
+                        Image(
+                            painter = painterResource(id = R.drawable.alliancelogo),
+                            contentDescription = "Allianze Logo"
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(id = R.drawable.hordelogo),
+                            contentDescription = "Horde Logo"
+                        )
+                    }
+
+                    Text(text = "Lista de miembros")
+                    Spacer(modifier = Modifier.padding(8.dp))
+                    Spacer(modifier = Modifier.padding(8.dp))
+
+                    DynamicButton(
+                        currentScreen = Routes.CharacterGuildScreen.route,
+                        navController = navController,
+                        blizzardViewModel = blizzardViewModel,
+                        characterProfileSummary = characterProfileSummary,
+                        characterActiveSpecialization = characterActiveSpecialization
+                    )
+
+                    Spacer(modifier = Modifier.padding(8.dp))
+
+                    if (characterGuild?.members?.isEmpty() == true) {
+                        Image(
+                            painter = painterResource(id = R.drawable.frog),
+                            contentDescription = "Frog",
+                            modifier = Modifier
+                                .size(250.dp)
+                                .clip(CircleShape),
+                            contentScale = ContentScale.Crop
+                        )
+
+                        Spacer(modifier = Modifier.padding(16.dp))
+
+                        Text(
+                            text = "Parece que este personaje no pertenece a ninguna hermandad",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                    } else {
+                        LazyColumn(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            characterGuild?.members?.size?.let {
+                                items(it) { member ->
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceEvenly,
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        ClickableText(
+                                            AnnotatedString(
+                                                text = characterGuild!!.members[member].character.name
+                                            )
+                                        ) {
+                                            blizzardViewModel.loadCharacterProfileSummaryEquipmentMedia(
+                                                characterGuild!!.members[member].character.name,
+                                                characterGuild!!.members[member].character.realm.slug
+                                            )
+                                            navController.navigate(route = Routes.CharacterEquipmentScreen.route)
+                                        }
+                                    }
                                 }
                             }
                         }

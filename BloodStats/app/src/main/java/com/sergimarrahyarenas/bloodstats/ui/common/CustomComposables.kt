@@ -156,7 +156,7 @@ fun DynamicButton(
             ) {
                 val screenName = when (screen) {
                     Routes.CharacterEquipmentScreen.route -> "Equipamiento"
-                    Routes.CharacterGuildScreen.route -> "Clan"
+                    Routes.CharacterGuildScreen.route -> "Hermandad"
                     Routes.CharacterSpecializationScreen.route -> "Especialización"
                     Routes.CharacterStatisticsScreen.route -> "Atributos"
                     Routes.CharacterDungeonsScreen.route -> "Mazmorras"

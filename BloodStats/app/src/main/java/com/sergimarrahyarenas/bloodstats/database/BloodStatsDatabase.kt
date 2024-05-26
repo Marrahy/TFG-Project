@@ -14,7 +14,7 @@ import com.sergimarrahyarenas.bloodstats.database.entities.UserFavoriteCrossRef
 
 @Database(
     entities = [UserEntity::class, PreferencesEntity::class, FavoriteEntity::class, UserFavoriteCrossRef::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

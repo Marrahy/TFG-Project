@@ -68,6 +68,7 @@ class UserViewModel(context: Context) : ViewModel() {
         userEmail: String?,
         userName: String,
         userPassword: String,
+        avatar: Int,
         context: Context,
         onResult: (UserEntity) -> Unit,
     ) {
@@ -78,7 +79,8 @@ class UserViewModel(context: Context) : ViewModel() {
                     val user = UserEntity(
                         userName = userName,
                         userPassword = userPassword,
-                        userEmail = userEmail
+                        userEmail = userEmail,
+                        avatarId = avatar
                     )
                     database.withTransaction {
                         userDao.insertUser(user)
@@ -154,7 +156,10 @@ class UserViewModel(context: Context) : ViewModel() {
 
     fun checkIfFavorite(characterName: String, characterRealmSlug: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val favorite = database.userDao().getFavoriteByCharacterNameAndRealm(characterName = characterName, characterRealmSlug = characterRealmSlug)
+            val favorite = database.userDao().getFavoriteByCharacterNameAndRealm(
+                characterName = characterName,
+                characterRealmSlug = characterRealmSlug
+            )
             _isFavorite.postValue(favorite != null)
         }
     }
@@ -189,7 +194,12 @@ class UserViewModel(context: Context) : ViewModel() {
                 val favorite = database.userDao().getFavoriteByCharacterNameAndRealm(characterName, characterRealmSlug)
                 favorite?.let {
                     database.withTransaction {
-                        userDao.deleteUserFavoriteCrossRef(UserFavoriteCrossRef(userUUID = userUUID, favoriteUUID = it.favoriteUUID))
+                        userDao.deleteUserFavoriteCrossRef(
+                            UserFavoriteCrossRef(
+                                userUUID = userUUID,
+                                favoriteUUID = it.favoriteUUID
+                            )
+                        )
                         userDao.deleteFavorite(it)
                     }
                     _isFavorite.postValue(false)

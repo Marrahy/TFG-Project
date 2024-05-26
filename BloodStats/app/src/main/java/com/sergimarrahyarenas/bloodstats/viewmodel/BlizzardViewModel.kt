@@ -1,5 +1,6 @@
 package com.sergimarrahyarenas.bloodstats.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -175,10 +176,6 @@ class BlizzardViewModel : ViewModel() {
                     )
                 }
 
-                if (_characterProfileSummary.value == null) {
-                    _responseError.postValue(true)
-                }
-
                 getPrimaryAttribute()
                 getMembersMedia()
                 getCharacterMythicKeystoneProfile(characterName = characterName, realmSlug = realmSlug)
@@ -206,11 +203,11 @@ class BlizzardViewModel : ViewModel() {
                 val characterSpecSpells = mutableListOf<SpellTooltip>()
 
                 characterSpecialization?.specializations?.let { specialization ->
-                        specialization.map { selectedClassTalent ->
-                            selectedClassTalent.loadouts[0].selected_class_talents.map { classSpells ->
+                        specialization.map { talents ->
+                            talents.loadouts[0].selected_class_talents.map { classSpells ->
                                 classSpells.tooltip.spell_tooltip.let { characterClassSpells.add(it) }
                             }
-                            selectedClassTalent.loadouts[0].selected_spec_talents.map { specSpells ->
+                            talents.loadouts[0].selected_spec_talents.map { specSpells ->
                                 specSpells.tooltip.spell_tooltip.let { characterSpecSpells.add(it) }
                             }
                         }
