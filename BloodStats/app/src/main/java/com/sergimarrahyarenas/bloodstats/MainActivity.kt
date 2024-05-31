@@ -9,8 +9,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import com.example.compose.BloodStatsTheme
-import com.sergimarrahyarenas.bloodstats.navigation.Navigation
+import com.sergimarrahyarenas.bloodstats.ui.theme.BloodStatsTheme
+import com.sergimarrahyarenas.bloodstats.ui.navigation.Navigation
 import com.sergimarrahyarenas.bloodstats.viewmodel.UserViewModel
 
 class MainActivity : ComponentActivity() {

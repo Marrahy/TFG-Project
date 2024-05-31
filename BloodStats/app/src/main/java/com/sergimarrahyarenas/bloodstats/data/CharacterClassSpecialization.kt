@@ -1,6 +1,7 @@
 package com.sergimarrahyarenas.bloodstats.data
 
-import android.util.Log
+import androidx.compose.ui.res.stringResource
+import com.sergimarrahyarenas.bloodstats.R
 
 data class CharacterClassSpecialization(
     val characterClass: String?,
@@ -9,70 +10,70 @@ data class CharacterClassSpecialization(
     object Resources {
         private val attributeMap = hashMapOf(
             "Mago" to mapOf(
-                "Escarcha" to "Intelecto",
-                "Fuego" to "Intelecto",
-                "Arcano" to "Intelecto"
+                "Escarcha" to R.string.intellect_text,
+                "Fuego" to R.string.intellect_text,
+                "Arcano" to R.string.intellect_text
             ),
             "Evocador" to mapOf(
-                "Devastación" to "Intelecto",
-                "Preservación" to "Intelecto"
+                "Devastación" to R.string.intellect_text,
+                "Preservación" to R.string.intellect_text
             ),
             "Druida" to mapOf(
-                "Equilibrio" to "Intelecto",
-                "Restauración" to "Intelecto",
-                "Feral" to "Agilidad",
-                "Guardián" to "Agilidad"
+                "Equilibrio" to R.string.intellect_text,
+                "Restauración" to R.string.intellect_text,
+                "Feral" to R.string.agility_text,
+                "Guardián" to R.string.agility_text
             ),
             "Monje" to mapOf(
-                "Tejedor de niebla" to "Intelecto",
-                "Maestro Cervecero" to "Agilidad"
+                "Tejedor de niebla" to R.string.intellect_text,
+                "Maestro Cervecero" to R.string.agility_text
             ),
             "Paladín" to mapOf(
-                "Sagrado" to "Intelecto",
-                "Protección" to "Intelecto",
-                "Reprensión" to "Fuerza"
+                "Sagrado" to R.string.intellect_text,
+                "Protección" to R.string.intellect_text,
+                "Reprensión" to R.string.strength_text
             ),
             "Sacerdote" to mapOf(
-                "Disciplina" to "Intelecto",
-                "Sagrado" to "Intelecto",
-                "Sombra" to "Intelecto"
+                "Disciplina" to R.string.intellect_text,
+                "Sagrado" to R.string.intellect_text,
+                "Sombra" to R.string.intellect_text
             ),
             "Chamán" to mapOf(
-                "Elemental" to "Intelecto",
-                "Restauración" to "Intelecto",
-                "Mejora" to "Agilidad"
+                "Elemental" to R.string.intellect_text,
+                "Restauración" to R.string.intellect_text,
+                "Mejora" to R.string.agility_text
             ),
             "Brujo" to mapOf(
-                "Aflicción" to "Intelecto",
-                "Demonología" to "Intelecto",
-                "Destrucción" to "Intelecto"
+                "Aflicción" to R.string.intellect_text,
+                "Demonología" to R.string.intellect_text,
+                "Destrucción" to R.string.intellect_text
             ),
             "Caballero de la muerte" to mapOf(
-                "Escarcha" to "Fuerza",
-                "Sangre" to "Fuerza",
-                "Profano" to "Fuerza"
+                "Escarcha" to R.string.strength_text,
+                "Sangre" to R.string.strength_text,
+                "Profano" to R.string.strength_text
             ),
             "Guerrero" to mapOf(
-                "Furia" to "Fuerza",
-                "Armas" to "Fuerza"
+                "Furia" to R.string.strength_text,
+                "Armas" to R.string.strength_text
             ),
             "Cazador de demonios" to mapOf(
-                "Venganza" to "Agilidad",
-                "Devastación" to "Agilidad"
+                "Venganza" to R.string.agility_text,
+                "Devastación" to R.string.agility_text
             ),
             "Cazador" to mapOf(
-                "Bestias" to "Agilidad",
-                "Puntería" to "Agilidad",
-                "Supervivencia" to "Agilidad"
+                "Bestias" to R.string.agility_text,
+                "Puntería" to R.string.agility_text,
+                "Supervivencia" to R.string.agility_text
             ),
             "Pícaro" to mapOf(
-                "Asesinato" to "Agilidad",
-                "Forajido" to "Agilidad",
-                "Sutileza" to "Agilidad"
+                "Asesinato" to R.string.agility_text,
+                "Forajido" to R.string.agility_text,
+                "Sutileza" to R.string.agility_text
             )
         )
 
-        fun getAttribute(characterClassSpecialization: CharacterClassSpecialization): String? {
+        fun getAttribute(characterClassSpecialization: CharacterClassSpecialization): Int? {
             return attributeMap[characterClassSpecialization.characterClass]?.get(characterClassSpecialization.characterSpec)
         }
     }

@@ -83,7 +83,7 @@ dependencies {
     //Retrofit2
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
 
-    //Serialize
+    //Serialize/Deserialize
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
 
     //LifeCycle
@@ -94,6 +94,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.8.1"))
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.android.gms:play-services-auth:21.1.0")
+    implementation("com.google.firebase:firebase-auth")
 
     //Icons
     implementation("androidx.compose.material:material-icons-extended:1.5.4")
@@ -105,5 +106,8 @@ dependencies {
 
     //Profile picture remote load
     implementation("io.coil-kt:coil-compose:2.5.0")
+
+    //Responsive
+    implementation("androidx.compose.material3:material3-window-size-class-android:1.2.1")
 
 }
