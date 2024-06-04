@@ -10,8 +10,8 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.auth
 import com.sergimarrahyarenas.bloodstats.R
-import com.sergimarrahyarenas.bloodstats.model.signinresult.SignInResult
-import com.sergimarrahyarenas.bloodstats.model.signinresult.UserData
+import com.sergimarrahyarenas.bloodstats.model.google.signinresult.SignInResult
+import com.sergimarrahyarenas.bloodstats.model.google.signinresult.UserData
 import kotlinx.coroutines.tasks.await
 import java.util.concurrent.CancellationException
 

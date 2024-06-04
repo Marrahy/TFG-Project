@@ -46,8 +46,14 @@ class UserViewModel(context: Context) : ViewModel() {
     val isFavorite: LiveData<Boolean> = _isFavorite
 
     private val _onUserExistsError = MutableLiveData<Boolean>()
-    val onUserExistsError: LiveData<Boolean> = _onUserExistsError
 
+    /**
+     * This function verify the user credentials
+     *
+     * @param userName User name from the user input
+     * @param userPassword Password from the user input
+     * @return true if user exists at the DB
+     */
     suspend fun verifyUserCredentials(userName: String, userPassword: String): Boolean {
         val user = userRepository.getUserByName(userName)
         viewModelScope.launch(Dispatchers.IO) {
@@ -56,11 +62,26 @@ class UserViewModel(context: Context) : ViewModel() {
         return user?.userPassword == userPassword
     }
 
+    /**
+     * This function checks if the user exists in the DB
+     *
+     * @param userName User name from the user input
+     * @return true if there is a coincidence in DB
+     */
     suspend fun checkIfUserExists(userName: String): Boolean {
         val user = userRepository.getUserByName(userName)
         return user == null
     }
 
+    /**
+     * This function creates a User in the DB and post the User to _user variable
+     *
+     * @param userEmail Email from the user if the sign in is from Google Sign In function
+     * @param userName User name from the user input
+     * @param userPassword Password from the user input
+     * @param avatar Avatar selected by the user
+     * @param onResult onResult it's function is to call the verifyUser function
+     */
     fun createIfNotExists(
         userEmail: String?,
         userName: String,
@@ -105,6 +126,11 @@ class UserViewModel(context: Context) : ViewModel() {
         _onUserExistsError.postValue(false)
     }
 
+    /**
+     * This function gets the preferences from the user and post it at _userPreferences variable
+     *
+     * @param userUUID ID from the user logged
+     */
     fun getUserWithPreferences(userUUID: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val userWithPreferences = preferencesRepository.getPreferencesByUserUUID(userUUID)
@@ -112,6 +138,12 @@ class UserViewModel(context: Context) : ViewModel() {
         }
     }
 
+    /**
+     * This function updates the user selected theme
+     *
+     * @param userUUID ID from the user logged
+     * @param newTheme Selected theme by the user
+     */
     fun updateUserTheme(userUUID: String, newTheme: String) {
         Log.d("updateUserTheme", newTheme)
         Log.d("updateUserTheme", userUUID)
@@ -120,12 +152,21 @@ class UserViewModel(context: Context) : ViewModel() {
         }
     }
 
+    /**
+     * This function post the user logged at _user variable
+     *
+     * @param userEntity User logged
+     */
     fun saveUser(userEntity: UserEntity) {
         viewModelScope.launch(Dispatchers.IO) {
             _user.postValue(userEntity)
         }
     }
 
+    /**
+     * This function clear the _user variable when a user signs out or delete it's account
+     *
+     */
     fun clearUser() {
         viewModelScope.launch(Dispatchers.IO) {
             _user.postValue(null)
@@ -133,6 +174,11 @@ class UserViewModel(context: Context) : ViewModel() {
         }
     }
 
+    /**
+     * This function deletes the user entity logged
+     *
+     * @param userUUID ID from the user
+     */
     fun deleteUser(userUUID: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -161,6 +207,12 @@ class UserViewModel(context: Context) : ViewModel() {
         }
     }
 
+    /**
+     * This function checks if the character is favorite based in the user favorite list from the DB
+     *
+     * @param user User logged
+     * @param characterName Character searched
+     */
     fun checkIfFavorite(user: UserEntity, characterName: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val isFavorite = userRepository.getUserFavorite(user.userUUID, characterName)
@@ -168,6 +220,14 @@ class UserViewModel(context: Context) : ViewModel() {
         }
     }
 
+    /**
+     * This function adds a character to the user favorite list at the DB
+     *
+     * @param userUUID ID from the user
+     * @param characterName Character searched
+     * @param characterRealmSlug Character realm
+     * @param characterMythicRating Character mythic rating
+     */
     fun addFavorite(userUUID: String, characterName: String, characterRealmSlug: String, characterMythicRating: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -192,12 +252,23 @@ class UserViewModel(context: Context) : ViewModel() {
         }
     }
 
+    /**
+     * This function gets the user favorite list from the DB
+     *
+     * @param userUUID ID from the user
+     */
     fun getFavorites(userUUID: String) {
         viewModelScope.launch(Dispatchers.IO) {
             _userFavorites.postValue(userRepository.getUserFavorites(userUUID))
         }
     }
 
+    /**
+     * This function deletes a favorite from the DB based in the userUUID and the characterName
+     *
+     * @param userUUID ID from the user
+     * @param characterName Character searched
+     */
     fun removeFavorite(userUUID: String, characterName: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {

@@ -1,6 +1,5 @@
 package com.sergimarrahyarenas.bloodstats.ui.screens.characterdata
 
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,16 +13,25 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.WarningAmber
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -31,9 +39,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.sergimarrahyarenas.bloodstats.R
 import com.sergimarrahyarenas.bloodstats.data.network.client.GoogleAuthUiClient
-import com.sergimarrahyarenas.bloodstats.ui.navigation.Routes
 import com.sergimarrahyarenas.bloodstats.ui.components.CustomScaffold
 import com.sergimarrahyarenas.bloodstats.ui.components.DynamicButton
+import com.sergimarrahyarenas.bloodstats.ui.components.TitleScreen
+import com.sergimarrahyarenas.bloodstats.ui.navigation.Routes
 import com.sergimarrahyarenas.bloodstats.ui.theme.BloodStatsTheme
 import com.sergimarrahyarenas.bloodstats.viewmodel.BlizzardViewModel
 import com.sergimarrahyarenas.bloodstats.viewmodel.UserViewModel
@@ -45,12 +54,15 @@ fun CharacterDungeonsScreen(
     blizzardViewModel: BlizzardViewModel,
     userViewModel: UserViewModel,
     googleAuthUiClient: GoogleAuthUiClient,
-    coroutineScope: CoroutineScope,
+    coroutineScope: CoroutineScope
 ) {
     val characterEncounters by blizzardViewModel.characterEncounters.observeAsState()
     val characterProfileSummary by blizzardViewModel.characterProfileSummary.observeAsState()
     val characterActiveSpecialization by blizzardViewModel.characterActiveSpecialization.observeAsState()
     val preferences by userViewModel.userPreferences.observeAsState()
+
+    var showDialog by remember { mutableStateOf(false) }
+    var hasCheckedDungeons by remember { mutableStateOf(false) }
 
     val darkTheme = preferences?.theme == "dark"
 
@@ -72,14 +84,73 @@ fun CharacterDungeonsScreen(
                     "Halls of Infusion" to R.drawable.halls_of_infusion_small
                 )
 
+                if (!hasCheckedDungeons) {
+                    val hasCompletedDungeons = characterEncounters?.expansions?.find {
+                        it.expansion.name == "Dragonflight"
+                    }?.instances?.any { instance ->
+                        instance.modes.any { mode ->
+                            mode.difficulty.type == "MYTHIC" && mode.progress.encounters.any { it.completed_count > 0 }
+                        }
+                    } == true
+
+                    if (!hasCompletedDungeons) {
+                        showDialog = true
+                    }
+                    hasCheckedDungeons = true
+                }
+
+                if (showDialog) {
+                    AlertDialog(
+                        onDismissRequest = { showDialog = false },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    showDialog = false
+                                }
+                            ) {
+                                Text(text = stringResource(R.string.ok_text))
+                            }
+                        },
+                        title = {
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceEvenly,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(text = stringResource(R.string.incomplete_dungeons_text))
+                                Spacer(modifier = Modifier.padding(8.dp))
+                                Icon(
+                                    imageVector = Icons.Default.WarningAmber,
+                                    contentDescription = "Warning",
+                                    tint = Color.Red,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                        },
+                        text = {
+                            Text(text = stringResource(R.string.dungeons_not_done_error_text))
+                        }
+                    )
+                }
+
                 Box(modifier = Modifier.fillMaxSize()) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        TitleScreen(title = stringResource(R.string.dungeons_text))
+                    }
+
                     LazyColumn(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.SpaceEvenly
+                        verticalArrangement = Arrangement.SpaceEvenly,
+                        modifier = Modifier.fillMaxSize()
                     ) {
                         characterEncounters?.expansions?.find { it.expansion.name == "Dragonflight" }?.instances?.forEach { instance ->
                             instance.modes.find { it.difficulty.type == "MYTHIC" }?.let { mode ->
-                                val dungeonImage = dungeonImageMap[instance.instance.name] ?: R.drawable.frog
+                                val dungeonImage =
+                                    dungeonImageMap[instance.instance.name] ?: R.drawable.frog
                                 mode.progress.encounters.forEach { encounter ->
                                     item {
                                         DungeonCard(
@@ -154,9 +225,20 @@ fun DungeonCard(
 
                 Column {
                     Text(text = instanceName, style = MaterialTheme.typography.titleMedium)
-                    Text(text = stringResource(R.string.dungeon_difficulty_text, difficulty), style = MaterialTheme.typography.bodyMedium)
-                    Text(text = stringResource(R.string.dungeon_state_text, status), style = MaterialTheme.typography.bodyMedium)
-                    Text(text = stringResource(R.string.character_count_number_text, completedCount), style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        text = stringResource(R.string.dungeon_difficulty_text, difficulty),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Text(
+                        text = stringResource(R.string.dungeon_state_text, status),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Text(
+                        text = stringResource(
+                            R.string.character_count_number_text,
+                            completedCount
+                        ), style = MaterialTheme.typography.bodyMedium
+                    )
                 }
             }
         }

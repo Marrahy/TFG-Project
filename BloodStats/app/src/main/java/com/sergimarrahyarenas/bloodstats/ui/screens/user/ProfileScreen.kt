@@ -47,7 +47,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.sergimarrahyarenas.bloodstats.R
 import com.sergimarrahyarenas.bloodstats.data.network.client.GoogleAuthUiClient
-import com.sergimarrahyarenas.bloodstats.model.signinresult.UserData
+import com.sergimarrahyarenas.bloodstats.model.google.signinresult.UserData
 import com.sergimarrahyarenas.bloodstats.ui.navigation.Routes
 import com.sergimarrahyarenas.bloodstats.ui.components.CustomScaffold
 import com.sergimarrahyarenas.bloodstats.ui.theme.BloodStatsTheme

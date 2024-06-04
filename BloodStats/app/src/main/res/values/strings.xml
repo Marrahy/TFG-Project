@@ -1,11 +1,11 @@
 <resources>
     <string name="app_name">BloodStats</string>
-    <string name="web_client_id">967071463598-84eq62cg51r4elff5i65m8scn9pgdb4c.apps.googleusercontent.com</string>
+    <string name="web_client_id" translatable="false">967071463598-84eq62cg51r4elff5i65m8scn9pgdb4c.apps.googleusercontent.com</string>
     <string name="favorites_text">Favoritos</string>
-    <string name="specialization_text">Especialización:</string>
+    <string name="specialization_text">Especialización</string>
     <string name="character_class_talents_text_button">Talentos de Clase</string>
     <string name="character_spec_talents_text_button">Talentos de Especialización</string>
-    <string name="welcome_text">Has iniciado sesión con éxito, bienvenido/a %1$s</string>
+    <string name="welcome_text">Has iniciado sesión con éxito, bienvenido/a</string>
     <string name="user_name_label">Nombre de usuario</string>
     <string name="password_label">Contraseña</string>
     <string name="login_text_button">Iniciar Sesión</string>
@@ -43,13 +43,13 @@
     <string name="stamina_text">Aguante</string>
     <string name="versatility_text">Versatilidad</string>
     <string name="character_class_talent_text">Talento de clase</string>
-    <string name="character_spec_talent_text">Talento de especializaición</string>
+    <string name="character_spec_talent_text">Talento de especialización</string>
     <string name="character_members_guild_text">Lista de miembros</string>
     <string name="character_members_error_text">Parece que este personaje no pertenece a ninguna hermandad</string>
     <string name="dungeon_difficulty_text">Dificultad: %1$s</string>
     <string name="dungeon_state_text">Estado: %1$s</string>
     <string name="character_count_number_text">Completado: %1$s veces</string>
-    <string name="title_scaffold_text">BloodStats</string>
+    <string name="title_scaffold_text" translatable="false">BloodStats</string>
     <string name="menu_profile_text">Perfil</string>
     <string name="menu_search_text">Buscar</string>
     <string name="menu_options_text">Opciones</string>
@@ -57,4 +57,12 @@
     <string name="guild_text">Hermandad</string>
     <string name="attributes_text">Atributos</string>
     <string name="dungeons_text">Mazmorras</string>
+    <string name="ok_text">Vale</string>
+    <string name="character_guild_error_text">No se ha encontrado la hermandad</string>
+    <string name="incomplete_dungeons_text">Mazmorras incompletas</string>
+    <string name="dungeons_not_done_error_text">Parece que este personaje no ha hecho ninguna mazmorra</string>
+    <string name="attributes_title_text">Atributos</string>
+    <string name="spec_title_text">Especialización</string>
+    <string name="guild_title_text">Hermandad</string>
+    <string name="dungeon_title_text">Mazmorras</string>
 </resources>

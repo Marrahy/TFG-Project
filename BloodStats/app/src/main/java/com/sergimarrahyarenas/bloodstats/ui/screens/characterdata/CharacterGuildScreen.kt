@@ -1,20 +1,36 @@
 package com.sergimarrahyarenas.bloodstats.ui.screens.characterdata
 
-import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.WarningAmber
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -25,6 +41,7 @@ import com.sergimarrahyarenas.bloodstats.R
 import com.sergimarrahyarenas.bloodstats.data.network.client.GoogleAuthUiClient
 import com.sergimarrahyarenas.bloodstats.ui.components.CustomScaffold
 import com.sergimarrahyarenas.bloodstats.ui.components.DynamicButton
+import com.sergimarrahyarenas.bloodstats.ui.components.TitleScreen
 import com.sergimarrahyarenas.bloodstats.ui.navigation.Routes
 import com.sergimarrahyarenas.bloodstats.ui.theme.BloodStatsTheme
 import com.sergimarrahyarenas.bloodstats.viewmodel.BlizzardViewModel
@@ -44,6 +61,9 @@ fun CharacterGuildScreen(
     val characterActiveSpecialization by blizzardViewModel.characterActiveSpecialization.observeAsState()
     val preferences by userViewModel.userPreferences.observeAsState()
 
+    var showDialog by remember { mutableStateOf(false) }
+    var hasCheckedGuild by remember { mutableStateOf(false) }
+
     val darkTheme = preferences?.theme == "dark"
 
     BloodStatsTheme(darkTheme = darkTheme) {
@@ -53,6 +73,48 @@ fun CharacterGuildScreen(
             userViewModel = userViewModel,
             coroutineScope = coroutineScope,
             content = {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    TitleScreen(title = stringResource(R.string.guild_text))
+                }
+
+                if (showDialog) {
+                    AlertDialog(
+                        onDismissRequest = { showDialog = false },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    showDialog = false
+                                }
+                            ) {
+                                Text(text = stringResource(R.string.ok_text))
+                            }
+                        },
+                        title = {
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceEvenly,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(text = stringResource(R.string.character_guild_error_text))
+                                Spacer(modifier = Modifier.padding(8.dp))
+                                Icon(
+                                    imageVector = Icons.Default.WarningAmber,
+                                    contentDescription = "Warning",
+                                    tint = Color.Red,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                        },
+                        text = {
+                            Text(text = stringResource(R.string.character_members_error_text))
+                        }
+                    )
+                }
+
                 LazyColumn(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -84,18 +146,15 @@ fun CharacterGuildScreen(
 
                     item {
                         Text(text = stringResource(R.string.character_members_guild_text))
+                        Spacer(modifier = Modifier.padding(16.dp))
                     }
 
-                    item {
-                        Spacer(modifier = Modifier.padding(8.dp))
-                    }
-
-                    item {
-                        Spacer(modifier = Modifier.padding(8.dp))
-                    }
-
-                    if (characterGuild?.members == null) {
+                    if (characterGuild?.members == null && !hasCheckedGuild) {
                         item {
+                            LaunchedEffect(Unit) {
+                                showDialog = true
+                                hasCheckedGuild = true
+                            }
                             Image(
                                 painter = painterResource(id = R.drawable.frog),
                                 contentDescription = "Frog",
@@ -103,15 +162,6 @@ fun CharacterGuildScreen(
                                     .size(250.dp)
                                     .clip(CircleShape),
                                 contentScale = ContentScale.Crop
-                            )
-
-                            Spacer(modifier = Modifier.padding(16.dp))
-
-                            Text(
-                                text = stringResource(R.string.character_members_error_text),
-                                style = MaterialTheme.typography.titleSmall,
-                                color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.padding(bottom = 8.dp)
                             )
                         }
                     } else {

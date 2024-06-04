@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.sergimarrahyarenas.bloodstats.R
-import com.sergimarrahyarenas.bloodstats.model.signinresult.UserData
+import com.sergimarrahyarenas.bloodstats.model.google.signinresult.UserData
 import com.sergimarrahyarenas.bloodstats.ui.navigation.Routes
 import com.sergimarrahyarenas.bloodstats.ui.theme.BloodStatsTheme
 import com.sergimarrahyarenas.bloodstats.viewmodel.BlizzardViewModel
@@ -49,7 +49,6 @@ fun LoadingScreen(
     navController: NavController,
     blizzardViewModel: BlizzardViewModel,
     userViewModel: UserViewModel,
-    userData: UserData?,
     context: Context
 ) {
     val checkIfNull by blizzardViewModel.characterProfileSummary.observeAsState()

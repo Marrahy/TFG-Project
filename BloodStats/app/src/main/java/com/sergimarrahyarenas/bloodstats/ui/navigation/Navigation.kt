@@ -48,10 +48,7 @@ fun Navigation(userViewModel: UserViewModel, context: Context) {
         composable(
             route = Routes.SplashScreen.route
         ) {
-            SplashScreen(
-                navController = navController,
-                blizzardViewModel = blizzardViewModel
-            )
+            SplashScreen(navController = navController)
         }
         composable(
             route = Routes.LoginScreen.route
@@ -95,8 +92,7 @@ fun Navigation(userViewModel: UserViewModel, context: Context) {
                 navController = navController,
                 blizzardViewModel = blizzardViewModel,
                 context = context,
-                userViewModel = userViewModel,
-                userData = googleAuthUiClient.getSignInUser()
+                userViewModel = userViewModel
             )
         }
         composable(

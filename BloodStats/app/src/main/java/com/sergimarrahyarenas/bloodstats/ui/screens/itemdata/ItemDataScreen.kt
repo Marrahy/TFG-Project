@@ -36,7 +36,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.sergimarrahyarenas.bloodstats.R
 import com.sergimarrahyarenas.bloodstats.data.network.client.GoogleAuthUiClient
-import com.sergimarrahyarenas.bloodstats.model.itemdata.ItemData
+import com.sergimarrahyarenas.bloodstats.model.blizzardmodels.itemdata.ItemData
 import com.sergimarrahyarenas.bloodstats.ui.components.CustomScaffold
 import com.sergimarrahyarenas.bloodstats.ui.theme.BloodStatsTheme
 import com.sergimarrahyarenas.bloodstats.viewmodel.BlizzardViewModel
@@ -124,7 +124,7 @@ fun ItemDataScreen(
 
 @Composable
 fun ItemDetail(
-    item: ItemData,
+    item: com.sergimarrahyarenas.bloodstats.model.blizzardmodels.itemdata.ItemData,
     blizzardViewModel: BlizzardViewModel,
     userViewModel: UserViewModel
 ) {

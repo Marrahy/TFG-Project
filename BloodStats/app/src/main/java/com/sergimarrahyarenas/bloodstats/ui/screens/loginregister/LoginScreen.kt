@@ -125,7 +125,7 @@ fun LoginScreen(
             if (state.isSignInSuccessful) {
                 Toast.makeText(
                     context,
-                    context.getString(R.string.welcome_text, userViewModel.user.value?.userName),
+                    context.getString(R.string.welcome_text),
                     Toast.LENGTH_LONG
                 ).show()
 

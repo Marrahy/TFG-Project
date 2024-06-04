@@ -38,10 +38,11 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.sergimarrahyarenas.bloodstats.R
 import com.sergimarrahyarenas.bloodstats.data.network.client.GoogleAuthUiClient
-import com.sergimarrahyarenas.bloodstats.model.characterstatistics.CharacterStatistics
+import com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterstatistics.CharacterStatistics
 import com.sergimarrahyarenas.bloodstats.ui.navigation.Routes
 import com.sergimarrahyarenas.bloodstats.ui.components.CustomScaffold
 import com.sergimarrahyarenas.bloodstats.ui.components.DynamicButton
+import com.sergimarrahyarenas.bloodstats.ui.components.TitleScreen
 import com.sergimarrahyarenas.bloodstats.ui.theme.BloodStatsTheme
 import com.sergimarrahyarenas.bloodstats.viewmodel.BlizzardViewModel
 import com.sergimarrahyarenas.bloodstats.viewmodel.UserViewModel
@@ -68,6 +69,7 @@ fun CharacterStatisticsScreen(
     val user by userViewModel.user.observeAsState()
     val favorites by userViewModel.userFavorites.observeAsState()
     val preferences by userViewModel.userPreferences.observeAsState()
+
     val darkTheme = preferences?.theme == "dark"
 
     LaunchedEffect(key1 = true) {
@@ -87,6 +89,14 @@ fun CharacterStatisticsScreen(
             userViewModel = userViewModel,
             coroutineScope = coroutineScope,
             content = {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    TitleScreen(title = stringResource(R.string.attributes_text))
+                }
+
                 LazyColumn(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.SpaceEvenly,
@@ -212,7 +222,7 @@ fun CharacterStatisticsScreen(
 
 @Composable
 fun Stats(
-    characterStatistics: CharacterStatistics?,
+    characterStatistics: com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterstatistics.CharacterStatistics?,
     blizzardViewModel: BlizzardViewModel,
     userViewModel: UserViewModel
 ) {

@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.sergimarrahyarenas.bloodstats.R
 import com.sergimarrahyarenas.bloodstats.data.network.client.GoogleAuthUiClient
-import com.sergimarrahyarenas.bloodstats.model.realm.RealmInfo
+import com.sergimarrahyarenas.bloodstats.model.blizzardmodels.realm.RealmInfo
 import com.sergimarrahyarenas.bloodstats.ui.navigation.Routes
 import com.sergimarrahyarenas.bloodstats.ui.components.CustomScaffold
 import com.sergimarrahyarenas.bloodstats.ui.theme.BloodStatsTheme
@@ -134,7 +134,7 @@ fun SearchBox(
     val listOfRealms by blizzardViewModel.listOfRealms.observeAsState(emptyList())
     val preferences by userViewModel.userPreferences.observeAsState()
 
-    var selectedRealm by remember { mutableStateOf<RealmInfo?>(null) }
+    var selectedRealm by remember { mutableStateOf<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.realm.RealmInfo?>(null) }
     var expanded by remember { mutableStateOf(false) }
 
     val darkTheme = preferences?.theme == "dark"

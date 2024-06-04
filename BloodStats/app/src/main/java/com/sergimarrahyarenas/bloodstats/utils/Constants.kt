@@ -13,7 +13,6 @@ object Constants {
     const val MYTHIC_KEYSTONE_PROFILE = "mythic-keystone-profile"
     const val ROSTER = "roster"
     const val SPECIALIZATION = "specializations"
-    const val ITEM_MEDIA = "item-media"
     const val EQUIPMENT = "equipment"
     const val STATISTICS = "statistics"
     const val GRANT_TYPE = "client_credentials"
@@ -21,6 +20,5 @@ object Constants {
     const val DYNAMIC_NAMESPACE = "dynamic-eu"
     const val STATIC_NAMESPACE = "static-eu"
     const val LOCALE_ES = "es_ES"
-    const val LOCALE_EN = "en_EN"
-    const val LOCALE_IT = "it_IT"
+    const val LOCALE_EN = "en_US"
 }

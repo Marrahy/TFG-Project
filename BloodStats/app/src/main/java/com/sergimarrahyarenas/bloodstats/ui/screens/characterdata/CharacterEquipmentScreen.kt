@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -34,15 +35,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.sergimarrahyarenas.bloodstats.R
 import com.sergimarrahyarenas.bloodstats.data.network.client.GoogleAuthUiClient
-import com.sergimarrahyarenas.bloodstats.model.characterequipment.EquippedItem
-import com.sergimarrahyarenas.bloodstats.model.itemmedia.ItemMedia
+import com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterequipment.EquippedItem
+import com.sergimarrahyarenas.bloodstats.model.blizzardmodels.itemmedia.ItemMedia
 import com.sergimarrahyarenas.bloodstats.ui.components.CustomScaffold
 import com.sergimarrahyarenas.bloodstats.ui.components.DynamicButton
+import com.sergimarrahyarenas.bloodstats.ui.components.TitleScreen
 import com.sergimarrahyarenas.bloodstats.ui.navigation.Routes
+import com.sergimarrahyarenas.bloodstats.ui.screens.itemdata.getColorByQuality
 import com.sergimarrahyarenas.bloodstats.ui.theme.BloodStatsTheme
 import com.sergimarrahyarenas.bloodstats.viewmodel.BlizzardViewModel
 import com.sergimarrahyarenas.bloodstats.viewmodel.UserViewModel
@@ -73,15 +78,14 @@ fun CharacterEquipmentScreen(
                 val characterEquipment by blizzardViewModel.equippedItems.observeAsState()
                 val characterEquipmentMedia by blizzardViewModel.equippedItemsMedia.observeAsState()
                 val characterActiveSpecialization by blizzardViewModel.characterActiveSpecialization.observeAsState()
-                val isLoading by blizzardViewModel.isLoading.observeAsState()
-
-                Log.d("size1", "${characterEquipment?.size}")
 
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxSize()
                 ) {
+                    TitleScreen(title = stringResource(R.string.equipment_text))
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceEvenly,
@@ -114,7 +118,7 @@ fun CharacterEquipmentScreen(
                         userViewModel = userViewModel
                     )
 
-                    if (isLoading == true) {
+                    if (characterEquipment?.isEmpty() == true) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center,
@@ -145,7 +149,7 @@ fun CharacterEquipmentScreen(
 
 @Composable
 fun EquipmentItemCard(
-    item: EquippedItem?,
+    item: com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterequipment.EquippedItem?,
     itemMediaUrl: String?,
     navController: NavController,
     blizzardViewModel: BlizzardViewModel,
@@ -197,8 +201,8 @@ fun EquipmentItemCard(
 @Composable
 fun CharacterEquipmentList(
     navController: NavController,
-    characterEquipment: List<EquippedItem?>,
-    characterEquipmentMedia: List<ItemMedia?>,
+    characterEquipment: List<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterequipment.EquippedItem?>,
+    characterEquipmentMedia: List<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.itemmedia.ItemMedia?>,
     blizzardViewModel: BlizzardViewModel,
     userViewModel: UserViewModel
 ) {
