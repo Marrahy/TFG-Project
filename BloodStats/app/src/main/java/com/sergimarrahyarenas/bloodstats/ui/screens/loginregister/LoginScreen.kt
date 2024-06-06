@@ -2,7 +2,6 @@ package com.sergimarrahyarenas.bloodstats.ui.screens.loginregister
 
 import android.app.Activity
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest

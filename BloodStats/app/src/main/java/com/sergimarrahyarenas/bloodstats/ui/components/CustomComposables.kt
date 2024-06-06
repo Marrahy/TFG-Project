@@ -46,10 +46,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.sergimarrahyarenas.bloodstats.R
-import com.sergimarrahyarenas.bloodstats.ui.theme.BloodStatsTheme
 import com.sergimarrahyarenas.bloodstats.data.network.client.GoogleAuthUiClient
 import com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterprofilesummary.CharacterProfileSummary
 import com.sergimarrahyarenas.bloodstats.ui.navigation.Routes
+import com.sergimarrahyarenas.bloodstats.ui.theme.BloodStatsTheme
 import com.sergimarrahyarenas.bloodstats.viewmodel.BlizzardViewModel
 import com.sergimarrahyarenas.bloodstats.viewmodel.UserViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -75,7 +75,8 @@ fun CustomScaffold(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(text = stringResource(R.string.title_scaffold_text)) },
+                    title = {
+                        Text(text = stringResource(R.string.title_scaffold_text)) },
                     navigationIcon = {
                         var expanded by remember { mutableStateOf(false) }
                         IconButton(
@@ -146,6 +147,11 @@ fun CustomScaffold(
                         }
                     },
                     actions = {
+                        Text(
+                            text = "${user?.userName}",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+
                         user?.avatarId.let { avatarResource ->
                             IconButton(
                                 onClick = {
@@ -191,13 +197,13 @@ fun DynamicButton(
     currentScreen: String,
     navController: NavController,
     blizzardViewModel: BlizzardViewModel,
-    characterProfileSummary: com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterprofilesummary.CharacterProfileSummary?,
+    characterProfileSummary: CharacterProfileSummary?,
     characterActiveSpecialization: String?,
     userViewModel: UserViewModel
 ) {
     val preferences by userViewModel.userPreferences.observeAsState()
-    val darkTheme = preferences?.theme == "dark"
 
+    val darkTheme = preferences?.theme == "dark"
     val buttonList = allScreens.filter { it != currentScreen }
 
     BloodStatsTheme(darkTheme = darkTheme) {

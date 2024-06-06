@@ -1,7 +1,6 @@
 package com.sergimarrahyarenas.bloodstats.model.blizzardmodels.itemdata
 
 import Stat
-import com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterequipment.Quality
 
 data class PreviewItem(
     val armor: com.sergimarrahyarenas.bloodstats.model.blizzardmodels.itemdata.Armor,

@@ -2,14 +2,11 @@ package com.sergimarrahyarenas.bloodstats.viewmodel
 
 import android.content.Context
 import android.database.sqlite.SQLiteConstraintException
-import android.util.Log
-import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.room.withTransaction
-import com.sergimarrahyarenas.bloodstats.R
 import com.sergimarrahyarenas.bloodstats.data.database.BloodStatsDatabase
 import com.sergimarrahyarenas.bloodstats.data.database.entities.FavoriteEntity
 import com.sergimarrahyarenas.bloodstats.data.database.entities.PreferencesEntity
@@ -145,8 +142,6 @@ class UserViewModel(context: Context) : ViewModel() {
      * @param newTheme Selected theme by the user
      */
     fun updateUserTheme(userUUID: String, newTheme: String) {
-        Log.d("updateUserTheme", newTheme)
-        Log.d("updateUserTheme", userUUID)
         viewModelScope.launch(Dispatchers.IO) {
             preferencesRepository.updateThemeByUserUUID(userUUID, newTheme)
         }

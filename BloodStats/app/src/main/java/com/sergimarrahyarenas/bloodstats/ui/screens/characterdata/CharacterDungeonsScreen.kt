@@ -106,6 +106,7 @@ fun CharacterDungeonsScreen(
                             TextButton(
                                 onClick = {
                                     showDialog = false
+                                    navController.popBackStack()
                                 }
                             ) {
                                 Text(text = stringResource(R.string.ok_text))
@@ -134,19 +135,21 @@ fun CharacterDungeonsScreen(
                 }
 
                 Box(modifier = Modifier.fillMaxSize()) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        TitleScreen(title = stringResource(R.string.dungeons_text))
-                    }
-
                     LazyColumn(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.SpaceEvenly,
                         modifier = Modifier.fillMaxSize()
                     ) {
+                        item {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                TitleScreen(title = stringResource(R.string.dungeons_text))
+                            }
+                        }
+
                         characterEncounters?.expansions?.find { it.expansion.name == "Dragonflight" }?.instances?.forEach { instance ->
                             instance.modes.find { it.difficulty.type == "MYTHIC" }?.let { mode ->
                                 val dungeonImage =

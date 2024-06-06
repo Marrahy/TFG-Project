@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sergimarrahyarenas.bloodstats.data.specializations.CharacterClassSpecialization
 import com.sergimarrahyarenas.bloodstats.data.network.client.RetrofitApiClient
+import com.sergimarrahyarenas.bloodstats.data.specializations.CharacterClassSpecialization
 import com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characetermythickeystone.CharacterMythicKeystone
 import com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterencounters.CharacterEncounters
 import com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterequipment.CharacterEquipment
@@ -19,18 +19,18 @@ import com.sergimarrahyarenas.bloodstats.model.blizzardmodels.itemdata.ItemData
 import com.sergimarrahyarenas.bloodstats.model.blizzardmodels.itemdata.ItemStats
 import com.sergimarrahyarenas.bloodstats.model.blizzardmodels.itemmedia.ItemMedia
 import com.sergimarrahyarenas.bloodstats.model.blizzardmodels.realm.RealmInfo
+import com.sergimarrahyarenas.bloodstats.model.blizzardmodels.specializationmedia.SpecializationMedia
 import com.sergimarrahyarenas.bloodstats.utils.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Locale
 
-class BlizzardViewModel() : ViewModel() {
+class BlizzardViewModel : ViewModel() {
     //Retrofit instance
     private val retrofitService = RetrofitApiClient()
 
-    //Api is getting consumed
+    //Request in process
     private val _isLoading = MutableLiveData(false)
-    val isLoading: LiveData<Boolean> = _isLoading
 
     //Error at Api Response
     private val _responseError = MutableLiveData(false)
@@ -40,13 +40,13 @@ class BlizzardViewModel() : ViewModel() {
     val accessToken: LiveData<String?> = _accessToken
 
     //Character Api
-    private val _characterProfileSummary = MutableLiveData<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterprofilesummary.CharacterProfileSummary?>()
-    val characterProfileSummary: LiveData<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterprofilesummary.CharacterProfileSummary?> = _characterProfileSummary
+    private val _characterProfileSummary = MutableLiveData<CharacterProfileSummary?>()
+    val characterProfileSummary: LiveData<CharacterProfileSummary?> = _characterProfileSummary
 
-    private val _characterEquipment = MutableLiveData<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterequipment.CharacterEquipment?>()
+    private val _characterEquipment = MutableLiveData<CharacterEquipment?>()
 
-    private val _characterStatistics = MutableLiveData<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterstatistics.CharacterStatistics?>()
-    val characterStatistics: LiveData<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterstatistics.CharacterStatistics?> = _characterStatistics
+    private val _characterStatistics = MutableLiveData<CharacterStatistics?>()
+    val characterStatistics: LiveData<CharacterStatistics?> = _characterStatistics
 
     private val _characterPrimaryStat = MutableLiveData<Int?>()
     val characterPrimaryStat: LiveData<Int?> = _characterPrimaryStat
@@ -54,46 +54,48 @@ class BlizzardViewModel() : ViewModel() {
     private val _characterActiveSpecialization = MutableLiveData<String?>()
     val characterActiveSpecialization: LiveData<String?> = _characterActiveSpecialization
 
-    private val _listOfClassSpells = MutableLiveData<List<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterspecialization.SpellTooltip?>>()
-    val listOfClassSpells: LiveData<List<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterspecialization.SpellTooltip?>> = _listOfClassSpells
+    private val _listOfClassSpells = MutableLiveData<List<SpellTooltip?>>()
+    val listOfClassSpells: LiveData<List<SpellTooltip?>> = _listOfClassSpells
 
-    private val _listOfSpecSpells = MutableLiveData<List<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterspecialization.SpellTooltip?>>()
-    val listOfSpecSpells: LiveData<List<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterspecialization.SpellTooltip?>> = _listOfSpecSpells
+    private val _listOfSpecSpells = MutableLiveData<List<SpellTooltip?>>()
+    val listOfSpecSpells: LiveData<List<SpellTooltip?>> = _listOfSpecSpells
 
-    private val _characterGuildRoster = MutableLiveData<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterguildroster.CharacterGuildRoster?>()
-    val characterGuildRoster: LiveData<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterguildroster.CharacterGuildRoster?> = _characterGuildRoster
+    private val _characterGuildRoster = MutableLiveData<CharacterGuildRoster?>()
+    val characterGuildRoster: LiveData<CharacterGuildRoster?> = _characterGuildRoster
 
-    private val _equippedItems = MutableLiveData<List<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterequipment.EquippedItem?>>()
-    val equippedItems: LiveData<List<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterequipment.EquippedItem?>> = _equippedItems
+    private val _equippedItems = MutableLiveData<List<EquippedItem?>>()
+    val equippedItems: LiveData<List<EquippedItem?>> = _equippedItems
 
-    private val _characterEncounters = MutableLiveData<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterencounters.CharacterEncounters?>()
-    val characterEncounters: LiveData<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterencounters.CharacterEncounters?> = _characterEncounters
+    private val _characterEncounters = MutableLiveData<CharacterEncounters?>()
+    val characterEncounters: LiveData<CharacterEncounters?> = _characterEncounters
 
-    private val _characterMythicKeystone = MutableLiveData<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characetermythickeystone.CharacterMythicKeystone?>()
-    val characterMythicKeystoneProfile: LiveData<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characetermythickeystone.CharacterMythicKeystone?> =
-        _characterMythicKeystone
+    private val _characterMythicKeystone = MutableLiveData<CharacterMythicKeystone?>()
+    val characterMythicKeystoneProfile: LiveData<CharacterMythicKeystone?> = _characterMythicKeystone
+
+    private val _characterSpecializationMedia = MutableLiveData<SpecializationMedia?>()
+    val characterSpecializationMedia: LiveData<SpecializationMedia?> = _characterSpecializationMedia
 
     //Item Api
-    private val _itemData = MutableLiveData<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.itemdata.ItemData?>()
-    val itemData: LiveData<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.itemdata.ItemData?> = _itemData
+    private val _itemData = MutableLiveData<ItemData?>()
+    val itemData: LiveData<ItemData?> = _itemData
 
-    private val _itemStats = MutableLiveData<List<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.itemdata.ItemStats>>()
+    private val _itemStats = MutableLiveData<List<ItemStats>>()
 
     //Realm Api
-    private val _listOfRealms = MutableLiveData<List<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.realm.RealmInfo>?>()
-    val listOfRealms: LiveData<List<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.realm.RealmInfo>?> = _listOfRealms
+    private val _listOfRealms = MutableLiveData<List<RealmInfo>?>()
+    val listOfRealms: LiveData<List<RealmInfo>?> = _listOfRealms
 
     //Entities Media Api
-    private val _characterMedia = MutableLiveData<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.charactermedia.CharacterMedia?>()
-    val characterMedia: LiveData<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.charactermedia.CharacterMedia?> = _characterMedia
+    private val _characterMedia = MutableLiveData<CharacterMedia?>()
+    val characterMedia: LiveData<CharacterMedia?> = _characterMedia
 
-    private val _membersMedia = MutableLiveData<List<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.charactermedia.CharacterMedia?>?>()
+    private val _membersMedia = MutableLiveData<List<CharacterMedia?>?>()
 
-    private val _equippedItemsMedia = MutableLiveData<List<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.itemmedia.ItemMedia?>>()
-    val equippedItemsMedia: LiveData<List<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.itemmedia.ItemMedia?>> = _equippedItemsMedia
+    private val _equippedItemsMedia = MutableLiveData<List<ItemMedia?>>()
+    val equippedItemsMedia: LiveData<List<ItemMedia?>> = _equippedItemsMedia
 
-    private val _itemMedia = MutableLiveData<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.itemmedia.ItemMedia?>()
-    val itemMedia: LiveData<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.itemmedia.ItemMedia?> = _itemMedia
+    private val _itemMedia = MutableLiveData<ItemMedia?>()
+    val itemMedia: LiveData<ItemMedia?> = _itemMedia
 
     //Device Language
     private val _deviceLanguage = MutableLiveData<String>()
@@ -219,8 +221,8 @@ class BlizzardViewModel() : ViewModel() {
 
                 _characterActiveSpecialization.postValue(characterSpecialization?.active_specialization?.name)
 
-                val characterClassSpells = mutableListOf<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterspecialization.SpellTooltip>()
-                val characterSpecSpells = mutableListOf<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterspecialization.SpellTooltip>()
+                val characterClassSpells = mutableListOf<SpellTooltip>()
+                val characterSpecSpells = mutableListOf<SpellTooltip>()
 
                 characterSpecialization?.specializations?.let { specialization ->
                     specialization.map { talents ->
@@ -235,6 +237,11 @@ class BlizzardViewModel() : ViewModel() {
 
                 _listOfClassSpells.postValue(characterClassSpells)
                 _listOfSpecSpells.postValue(characterSpecSpells)
+                characterSpecialization?.specializations?.get(0)?.specialization?.id?.let {
+                    loadSpecializationMedia(
+                        it
+                    )
+                }
 
                 _responseError.postValue(false)
             } catch (e: Exception) {
@@ -397,6 +404,19 @@ class BlizzardViewModel() : ViewModel() {
         _isLoading.postValue(false)
     }
 
+    private fun loadSpecializationMedia(specializationId: Int) {
+        _isLoading.postValue(true)
+        viewModelScope.launch(Dispatchers.IO) {
+            _characterSpecializationMedia.postValue(
+                retrofitService.getCharacterSpecializationMedia(
+                    accessToken = accessToken.value!!,
+                    specializationId = specializationId,
+                    locale = deviceLanguage.value!!
+                )
+            )
+        }
+    }
+
     /**
      * This function makes an API request to Blizzard's API and gets a list of all EUW Realms
      *
@@ -471,7 +491,7 @@ class BlizzardViewModel() : ViewModel() {
      * This function post the main primary stat from the character searched based in the class and specialization
      *
      */
-    fun getPrimaryAttribute() {
+    private fun getPrimaryAttribute() {
         val characterClass = _characterProfileSummary.value?.character_class?.name
         val characterSpec = _characterProfileSummary.value?.active_spec?.name
 

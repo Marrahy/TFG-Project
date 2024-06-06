@@ -73,14 +73,6 @@ fun CharacterGuildScreen(
             userViewModel = userViewModel,
             coroutineScope = coroutineScope,
             content = {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    TitleScreen(title = stringResource(R.string.guild_text))
-                }
-
                 if (showDialog) {
                     AlertDialog(
                         onDismissRequest = { showDialog = false },
@@ -88,6 +80,7 @@ fun CharacterGuildScreen(
                             TextButton(
                                 onClick = {
                                     showDialog = false
+                                    navController.popBackStack()
                                 }
                             ) {
                                 Text(text = stringResource(R.string.ok_text))
@@ -100,7 +93,9 @@ fun CharacterGuildScreen(
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Text(text = stringResource(R.string.character_guild_error_text))
+
                                 Spacer(modifier = Modifier.padding(8.dp))
+
                                 Icon(
                                     imageVector = Icons.Default.WarningAmber,
                                     contentDescription = "Warning",
@@ -122,6 +117,15 @@ fun CharacterGuildScreen(
                         .fillMaxSize()
                         .padding(16.dp)
                 ) {
+                    item {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            TitleScreen(title = stringResource(R.string.guild_text))
+                        }
+                    }
                     item {
                         characterGuild?.guild?.let { Text(text = it.name) }
                     }

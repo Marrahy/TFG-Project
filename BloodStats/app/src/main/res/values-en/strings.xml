@@ -60,4 +60,6 @@
     <string name="character_guild_error_text">No Guild found</string>
     <string name="incomplete_dungeons_text">Mazmorras incompletas</string>
     <string name="dungeons_not_done_error_text">It seems that this character has not done any dungeon</string>
+    <string name="search_screen_welcome_text">Welcome, adventurer! This application will help you decide which skills to level up or which pieces of equipment to equip.</string>
+    <string name="how_to_use_search_function_text">To start using the application, search for a character by entering the name in the text field and use the button to select the realm/server where it is hosted.</string>
 </resources>

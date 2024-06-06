@@ -1,7 +1,6 @@
 package com.sergimarrahyarenas.bloodstats.ui.components
 
 import androidx.navigation.NavController
-import com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterprofilesummary.CharacterProfileSummary
 import com.sergimarrahyarenas.bloodstats.ui.navigation.Routes
 import com.sergimarrahyarenas.bloodstats.viewmodel.BlizzardViewModel
 

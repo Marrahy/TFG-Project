@@ -60,4 +60,6 @@
     <string name="character_guild_error_text">No s\'ha trobat cap germanor</string>
     <string name="incomplete_dungeons_text">Masmorres incompletes</string>
     <string name="dungeons_not_done_error_text">Sembla que aquest personatge no ha fet cap masmorra</string>
+    <string name="search_screen_welcome_text">Benvingut/a, aventurer/a!, aquesta aplicació t\'ajudarà a resoldre els teus dubtes sobre que habilitats pujar-te o que peces d\'equip posar-te.</string>
+    <string name="how_to_use_search_function_text">Per a començar a utilitzar l\'aplicació, cerca un personatge introduint en el camp de text el nom i utilitza el botó per a triar el regne/servidor on estiga allotjat</string>
 </resources>

@@ -61,8 +61,6 @@
     <string name="character_guild_error_text">No se ha encontrado la hermandad</string>
     <string name="incomplete_dungeons_text">Mazmorras incompletas</string>
     <string name="dungeons_not_done_error_text">Parece que este personaje no ha hecho ninguna mazmorra</string>
-    <string name="attributes_title_text">Atributos</string>
-    <string name="spec_title_text">Especialización</string>
-    <string name="guild_title_text">Hermandad</string>
-    <string name="dungeon_title_text">Mazmorras</string>
+    <string name="search_screen_welcome_text">¡Bienvenido/a, aventurero/a!, esta aplicación te ayudará a resolver tus dudas sobre que habilidades subirte o que piezas de equipo ponerte.</string>
+    <string name="how_to_use_search_function_text">Para comenzar a utilizar la aplicación, busca un personaje introduciendo en el campo de texto el nombre y utiliza el botón para elegir el reino/servidor donde esté alojado</string>
 </resources>

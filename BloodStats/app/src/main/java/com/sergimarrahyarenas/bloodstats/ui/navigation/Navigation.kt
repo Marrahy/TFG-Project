@@ -12,13 +12,13 @@ import com.sergimarrahyarenas.bloodstats.ui.screens.characterdata.CharacterEquip
 import com.sergimarrahyarenas.bloodstats.ui.screens.characterdata.CharacterGuildScreen
 import com.sergimarrahyarenas.bloodstats.ui.screens.characterdata.CharacterSpecializationScreen
 import com.sergimarrahyarenas.bloodstats.ui.screens.characterdata.CharacterStatisticsScreen
-import com.sergimarrahyarenas.bloodstats.ui.screens.itemdata.ItemDataScreen
 import com.sergimarrahyarenas.bloodstats.ui.screens.intro.LoadingScreen
+import com.sergimarrahyarenas.bloodstats.ui.screens.intro.SplashScreen
+import com.sergimarrahyarenas.bloodstats.ui.screens.itemdata.ItemDataScreen
 import com.sergimarrahyarenas.bloodstats.ui.screens.loginregister.LoginScreen
+import com.sergimarrahyarenas.bloodstats.ui.screens.search.SearchScreen
 import com.sergimarrahyarenas.bloodstats.ui.screens.user.OptionsScreen
 import com.sergimarrahyarenas.bloodstats.ui.screens.user.ProfileScreen
-import com.sergimarrahyarenas.bloodstats.ui.screens.search.SearchScreen
-import com.sergimarrahyarenas.bloodstats.ui.screens.intro.SplashScreen
 import com.sergimarrahyarenas.bloodstats.viewmodel.BlizzardViewModel
 import com.sergimarrahyarenas.bloodstats.viewmodel.GoogleViewModel
 import com.sergimarrahyarenas.bloodstats.viewmodel.UserViewModel
@@ -129,6 +129,7 @@ fun Navigation(userViewModel: UserViewModel, context: Context) {
                 navController = navController,
                 googleAuthUiClient = googleAuthUiClient,
                 coroutineScope = coroutineScope,
+                context = context
             )
         }
         composable(

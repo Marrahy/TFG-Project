@@ -1,6 +1,3 @@
-import com.sergimarrahyarenas.bloodstats.model.blizzardmodels.itemdata.Display
-import com.sergimarrahyarenas.bloodstats.model.blizzardmodels.itemdata.Type
-
 data class Stat(
     val display: com.sergimarrahyarenas.bloodstats.model.blizzardmodels.itemdata.Display,
     val is_equip_bonus: Boolean,

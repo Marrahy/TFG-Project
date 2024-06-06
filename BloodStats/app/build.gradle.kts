@@ -106,8 +106,4 @@ dependencies {
 
     //Profile picture remote load
     implementation("io.coil-kt:coil-compose:2.5.0")
-
-    //Responsive
-    implementation("androidx.compose.material3:material3-window-size-class-android:1.2.1")
-
 }

@@ -1,7 +1,6 @@
 package com.sergimarrahyarenas.bloodstats.ui.screens.intro
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
@@ -16,7 +15,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.sergimarrahyarenas.bloodstats.R
-import com.sergimarrahyarenas.bloodstats.model.google.signinresult.UserData
 import com.sergimarrahyarenas.bloodstats.ui.navigation.Routes
 import com.sergimarrahyarenas.bloodstats.ui.theme.BloodStatsTheme
 import com.sergimarrahyarenas.bloodstats.viewmodel.BlizzardViewModel
@@ -101,7 +98,7 @@ fun LoadingScreen(
     }
 
     LaunchedEffect(checkIfNull) {
-        delay(2500)
+        delay(5500)
         if (checkIfNull?.name != null) {
             navController.navigate(route = Routes.CharacterEquipmentScreen.route)
         } else {

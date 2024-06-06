@@ -1,6 +1,5 @@
 package com.sergimarrahyarenas.bloodstats.ui.screens.user
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,7 +28,6 @@ import androidx.navigation.NavController
 import com.sergimarrahyarenas.bloodstats.R
 import com.sergimarrahyarenas.bloodstats.data.network.client.GoogleAuthUiClient
 import com.sergimarrahyarenas.bloodstats.ui.components.CustomScaffold
-import com.sergimarrahyarenas.bloodstats.ui.navigation.Routes
 import com.sergimarrahyarenas.bloodstats.ui.theme.BloodStatsTheme
 import com.sergimarrahyarenas.bloodstats.viewmodel.UserViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -77,7 +75,6 @@ fun OptionsScreen(
                             checked = preferences?.theme == "dark",
                             onCheckedChange = { isChecked ->
                                 val newTheme = if (isChecked) "dark" else "light"
-                                Log.d("onCheckedChange", newTheme)
                                 user?.userUUID?.let {
                                     userViewModel.updateUserTheme(it, newTheme)
                                     userViewModel.getUserWithPreferences(it)
@@ -87,7 +84,7 @@ fun OptionsScreen(
                     }
                     Button(
                         onClick = {
-                            navController.navigate(route = Routes.SearchScreen.route)
+                            navController.popBackStack()
                         }
                     ) {
                         Icon(imageVector = Icons.Default.ArrowBackIosNew, contentDescription = "Arrow Back")

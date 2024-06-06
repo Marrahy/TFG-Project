@@ -1,7 +1,6 @@
 package com.sergimarrahyarenas.bloodstats.ui.screens.characterdata
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,24 +12,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -39,17 +31,14 @@ import coil.compose.AsyncImage
 import com.sergimarrahyarenas.bloodstats.R
 import com.sergimarrahyarenas.bloodstats.data.network.client.GoogleAuthUiClient
 import com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterstatistics.CharacterStatistics
-import com.sergimarrahyarenas.bloodstats.ui.navigation.Routes
 import com.sergimarrahyarenas.bloodstats.ui.components.CustomScaffold
 import com.sergimarrahyarenas.bloodstats.ui.components.DynamicButton
 import com.sergimarrahyarenas.bloodstats.ui.components.TitleScreen
+import com.sergimarrahyarenas.bloodstats.ui.navigation.Routes
 import com.sergimarrahyarenas.bloodstats.ui.theme.BloodStatsTheme
 import com.sergimarrahyarenas.bloodstats.viewmodel.BlizzardViewModel
 import com.sergimarrahyarenas.bloodstats.viewmodel.UserViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @Composable
 fun CharacterStatisticsScreen(
@@ -64,23 +53,9 @@ fun CharacterStatisticsScreen(
     val characterActiveSpecialization by blizzardViewModel.characterActiveSpecialization.observeAsState()
     val characterStatistics by blizzardViewModel.characterStatistics.observeAsState()
     val characterMedia by blizzardViewModel.characterMedia.observeAsState()
-    val characterMythicKeystone by blizzardViewModel.characterMythicKeystoneProfile.observeAsState()
-    val isFavorite by userViewModel.isFavorite.observeAsState(initial = false)
-    val user by userViewModel.user.observeAsState()
-    val favorites by userViewModel.userFavorites.observeAsState()
     val preferences by userViewModel.userPreferences.observeAsState()
 
     val darkTheme = preferences?.theme == "dark"
-
-    LaunchedEffect(key1 = true) {
-        favorites?.forEach { favorite ->
-            user.let {
-                if (it != null) {
-                    userViewModel.checkIfFavorite(it, favorite.characterName)
-                }
-            }
-        }
-    }
 
     BloodStatsTheme(darkTheme = darkTheme) {
         CustomScaffold(
@@ -89,14 +64,6 @@ fun CharacterStatisticsScreen(
             userViewModel = userViewModel,
             coroutineScope = coroutineScope,
             content = {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    TitleScreen(title = stringResource(R.string.attributes_text))
-                }
-
                 LazyColumn(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.SpaceEvenly,
@@ -104,6 +71,16 @@ fun CharacterStatisticsScreen(
                         .fillMaxSize()
                         .padding(8.dp)
                 ) {
+                    item {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            TitleScreen(title = stringResource(R.string.attributes_text))
+                        }
+                    }
+
                     item {
                         AsyncImage(
                             model = characterMedia?.assets?.last()?.value,
@@ -133,61 +110,6 @@ fun CharacterStatisticsScreen(
                                     text = stringResource(R.string.main_attributes_text),
                                     style = MaterialTheme.typography.titleLarge,
                                 )
-
-                                IconButton(
-                                    onClick = {
-                                        user?.let { user ->
-                                            val characterName =
-                                                characterStatistics?.character?.name ?: ""
-                                            val characterRealmSlug =
-                                                characterStatistics?.character?.realm?.slug ?: ""
-                                            val characterMythicRating =
-                                                characterMythicKeystone?.current_mythic_rating?.rating
-                                                    ?: 0
-
-                                            coroutineScope.launch {
-                                                if (isFavorite) {
-                                                    user.userUUID.let {
-                                                        userViewModel.removeFavorite(
-                                                            it,
-                                                            characterName
-                                                        )
-                                                    }
-                                                    withContext(Dispatchers.Main) {
-                                                        Toast.makeText(
-                                                            context,
-                                                            context.getString(R.string.character_deleted_from_user_favorite_list_text),
-                                                            Toast.LENGTH_LONG
-                                                        ).show()
-                                                    }
-                                                } else {
-                                                    user.userUUID.let {
-                                                        userViewModel.addFavorite(
-                                                            userUUID = it,
-                                                            characterName = characterName,
-                                                            characterRealmSlug = characterRealmSlug,
-                                                            characterMythicRating = characterMythicRating.toInt()
-                                                        )
-                                                    }
-                                                    withContext(Dispatchers.Main) {
-                                                        Toast.makeText(
-                                                            context,
-                                                            context.getString(R.string.character_added_to_user_favorite_list_text),
-                                                            Toast.LENGTH_LONG
-                                                        ).show()
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ) {
-                                    Icon(
-                                        imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarOutline,
-                                        contentDescription = "Favorite Icon",
-                                        modifier = Modifier.size(48.dp),
-                                        tint = Color.Yellow
-                                    )
-                                }
 
                                 if (characterStatistics != null) {
                                     Stats(
@@ -222,7 +144,7 @@ fun CharacterStatisticsScreen(
 
 @Composable
 fun Stats(
-    characterStatistics: com.sergimarrahyarenas.bloodstats.model.blizzardmodels.characterstatistics.CharacterStatistics?,
+    characterStatistics: CharacterStatistics?,
     blizzardViewModel: BlizzardViewModel,
     userViewModel: UserViewModel
 ) {
@@ -251,32 +173,61 @@ fun Stats(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                StatCard(attribute = stringResource(R.string.heart_points_text), value = "${characterStatistics?.health}")
-                StatCard(attribute = stringResource(R.string.critical_chance_text), value = "${characterStatistics?.melee_crit?.value?.toInt()}")
+                StatCard(
+                    attribute = stringResource(R.string.heart_points_text),
+                    value = "${characterStatistics?.health}"
+                )
+                StatCard(
+                    attribute = stringResource(R.string.critical_chance_text),
+                    value = "${characterStatistics?.melee_crit?.value?.toInt()}"
+                )
             }
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                StatCard(attribute = "${characterStatistics?.power_type?.name}", value = "${characterStatistics?.power}")
-                StatCard(attribute = stringResource(R.string.haste_text), value = "${characterStatistics?.melee_haste?.value?.toInt()}")
+                StatCard(
+                    attribute = "${characterStatistics?.power_type?.name}",
+                    value = "${characterStatistics?.power}"
+                )
+                StatCard(
+                    attribute = stringResource(R.string.haste_text),
+                    value = "${characterStatistics?.melee_haste?.value?.toInt()}"
+                )
             }
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                StatCard(attribute = "${blizzardViewModel.characterPrimaryStat.value?.let { stringResource(id = it) }}", value = "$statText")
-                StatCard(attribute = stringResource(R.string.mastery_text), value = "${characterStatistics?.mastery?.value?.toInt()}")
+                StatCard(
+                    attribute = "${
+                        blizzardViewModel.characterPrimaryStat.value?.let {
+                            stringResource(
+                                id = it
+                            )
+                        }
+                    }", value = "$statText"
+                )
+                StatCard(
+                    attribute = stringResource(R.string.mastery_text),
+                    value = "${characterStatistics?.mastery?.value?.toInt()}"
+                )
             }
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                StatCard(attribute = stringResource(R.string.stamina_text), value = "${characterStatistics?.stamina?.effective}")
-                StatCard(attribute = stringResource(R.string.versatility_text), value = "${characterStatistics?.versatility_damage_done_bonus?.toInt()}")
+                StatCard(
+                    attribute = stringResource(R.string.stamina_text),
+                    value = "${characterStatistics?.stamina?.effective}"
+                )
+                StatCard(
+                    attribute = stringResource(R.string.versatility_text),
+                    value = "${characterStatistics?.versatility_damage_done_bonus?.toInt()}"
+                )
             }
         }
     }

@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.outlined.Stars
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -48,8 +49,8 @@ import coil.compose.AsyncImage
 import com.sergimarrahyarenas.bloodstats.R
 import com.sergimarrahyarenas.bloodstats.data.network.client.GoogleAuthUiClient
 import com.sergimarrahyarenas.bloodstats.model.google.signinresult.UserData
-import com.sergimarrahyarenas.bloodstats.ui.navigation.Routes
 import com.sergimarrahyarenas.bloodstats.ui.components.CustomScaffold
+import com.sergimarrahyarenas.bloodstats.ui.navigation.Routes
 import com.sergimarrahyarenas.bloodstats.ui.theme.BloodStatsTheme
 import com.sergimarrahyarenas.bloodstats.viewmodel.GoogleViewModel
 import com.sergimarrahyarenas.bloodstats.viewmodel.UserViewModel
@@ -142,29 +143,33 @@ fun ProfileScreen(
                         color = MaterialTheme.colorScheme.secondary,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
+
                     if (userFavorites != null) {
                         userFavorites?.let { favorites ->
                             LazyColumn {
                                 items(favorites) { favorite ->
-                                    Text(
-                                        text = "${favorite.characterName} - ${favorite.characterRealmSlug} - ${favorite.characterMythicRating}",
-                                        fontWeight = FontWeight.Bold,
-                                        modifier = Modifier.padding(8.dp)
-                                    )
-                                    Icon(
-                                        imageVector = Icons.Outlined.Stars,
-                                        contentDescription = "Rating",
-                                        tint = Color.Yellow
-                                    )
+                                    Row(
+                                        horizontalArrangement = Arrangement.Center,
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Text(
+                                            text = "${favorite.characterName} - ${favorite.characterRealmSlug} - ${favorite.characterMythicRating}",
+                                            fontWeight = FontWeight.Bold,
+                                            modifier = Modifier.padding(8.dp)
+                                        )
+
+                                        Spacer(modifier = Modifier.padding(8.dp))
+
+                                        Icon(
+                                            imageVector = Icons.Outlined.Stars,
+                                            contentDescription = "Rating",
+                                            tint = Color.Yellow
+                                        )
+                                    }
                                 }
                             }
                         }
-                    } else {
-                        Image(
-                            painter = painterResource(id = R.drawable.frog),
-                            contentDescription = "Frog",
-                            contentScale = ContentScale.Crop
-                        )
                     }
 
                     Row(
@@ -185,7 +190,9 @@ fun ProfileScreen(
                                         ).show()
                                     }
                                     navController.navigate(route = Routes.LoginScreen.route) {
-                                        popUpTo(route = Routes.LoginScreen.route) { inclusive = true }
+                                        popUpTo(route = Routes.LoginScreen.route) {
+                                            inclusive = true
+                                        }
                                     }
                                 }
                             },
@@ -202,6 +209,13 @@ fun ProfileScreen(
                         ) {
                             Text(text = stringResource(R.string.delete_account_text_button))
                         }
+                    }
+                    Button(
+                        onClick = {
+                            navController.popBackStack()
+                        }
+                    ) {
+                        Icon(imageVector = Icons.Default.ArrowBackIosNew, contentDescription = "Arrow Back")
                     }
                 }
             }

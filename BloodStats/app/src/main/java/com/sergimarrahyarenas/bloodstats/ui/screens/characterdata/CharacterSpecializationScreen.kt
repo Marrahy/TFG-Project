@@ -7,9 +7,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,15 +30,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.sergimarrahyarenas.bloodstats.R
 import com.sergimarrahyarenas.bloodstats.data.network.client.GoogleAuthUiClient
-import com.sergimarrahyarenas.bloodstats.ui.navigation.Routes
 import com.sergimarrahyarenas.bloodstats.ui.components.CustomScaffold
 import com.sergimarrahyarenas.bloodstats.ui.components.DynamicButton
 import com.sergimarrahyarenas.bloodstats.ui.components.TitleScreen
+import com.sergimarrahyarenas.bloodstats.ui.navigation.Routes
 import com.sergimarrahyarenas.bloodstats.ui.theme.BloodStatsTheme
 import com.sergimarrahyarenas.bloodstats.viewmodel.BlizzardViewModel
 import com.sergimarrahyarenas.bloodstats.viewmodel.UserViewModel
@@ -53,6 +58,7 @@ fun CharacterSpecializationScreen(
     val characterActiveClassSpells by blizzardViewModel.listOfClassSpells.observeAsState(emptyList())
     val characterActiveSpecSpells by blizzardViewModel.listOfSpecSpells.observeAsState(emptyList())
     val characterProfileSummary by blizzardViewModel.characterProfileSummary.observeAsState()
+    val characterSpecializationMedia by blizzardViewModel.characterSpecializationMedia.observeAsState()
     val preferences by userViewModel.userPreferences.observeAsState()
 
     var showClassTalent by remember { mutableStateOf(false) }
@@ -71,16 +77,24 @@ fun CharacterSpecializationScreen(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    TitleScreen(title = stringResource(R.string.specialization_text))
-                }
-
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxSize()
                 ) {
+                    TitleScreen(title = stringResource(R.string.specialization_text))
+                    Card(
+                        shape = RoundedCornerShape(8.dp),
+                        elevation = CardDefaults.cardElevation(4.dp)
+                    ) {
+                        AsyncImage(
+                            model = characterSpecializationMedia?.assets?.get(0)?.value,
+                            contentDescription = "Specialization Media",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .size(width = 150.dp, height = 150.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.padding(8.dp))
+
                     Text(
                         text = "${stringResource(R.string.specialization_text)}: $characterActiveSpecialization",
                         style = MaterialTheme.typography.titleLarge,
@@ -97,31 +111,37 @@ fun CharacterSpecializationScreen(
                         userViewModel = userViewModel
                     )
 
-                    Button(
-                        onClick = {
-                            if (showSpecTalent) {
-                                showSpecTalent = false
-                                showClassTalent = !showClassTalent
-                            } else {
-                                showClassTalent = !showClassTalent
-                            }
-                        },
-                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.tertiary),
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Button(
+                            onClick = {
+                                if (showSpecTalent) {
+                                    showSpecTalent = false
+                                    showClassTalent = !showClassTalent
+                                } else {
+                                    showClassTalent = !showClassTalent
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.tertiary),
                         ) {
-                        Text(text = stringResource(R.string.character_class_talents_text_button))
-                    }
-                    Button(
-                        onClick = {
-                            if (showClassTalent) {
-                                showClassTalent = false
-                                showSpecTalent = !showSpecTalent
-                            } else {
-                                showSpecTalent = !showSpecTalent
-                            }
-                        },
-                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.tertiary),
+                            Text(text = stringResource(R.string.character_class_talents_text_button))
+                        }
+                        Button(
+                            onClick = {
+                                if (showClassTalent) {
+                                    showClassTalent = false
+                                    showSpecTalent = !showSpecTalent
+                                } else {
+                                    showSpecTalent = !showSpecTalent
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.tertiary),
                         ) {
-                        Text(text = stringResource(R.string.character_spec_talents_text_button))
+                            Text(text = stringResource(R.string.character_spec_talents_text_button))
+                        }
                     }
 
                     AnimatedVisibility(

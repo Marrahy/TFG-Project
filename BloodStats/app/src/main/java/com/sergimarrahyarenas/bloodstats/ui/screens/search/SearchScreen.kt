@@ -5,15 +5,17 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,9 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.sergimarrahyarenas.bloodstats.R
 import com.sergimarrahyarenas.bloodstats.data.network.client.GoogleAuthUiClient
-import com.sergimarrahyarenas.bloodstats.model.blizzardmodels.realm.RealmInfo
-import com.sergimarrahyarenas.bloodstats.ui.navigation.Routes
 import com.sergimarrahyarenas.bloodstats.ui.components.CustomScaffold
+import com.sergimarrahyarenas.bloodstats.ui.navigation.Routes
 import com.sergimarrahyarenas.bloodstats.ui.theme.BloodStatsTheme
 import com.sergimarrahyarenas.bloodstats.viewmodel.BlizzardViewModel
 import com.sergimarrahyarenas.bloodstats.viewmodel.UserViewModel
@@ -81,39 +82,44 @@ fun SearchScreen(
             userViewModel = userViewModel,
             coroutineScope = coroutineScope,
             content = {
-                BoxWithConstraints(
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    val maxWidth = this@BoxWithConstraints.maxWidth
-                    val padding = if (maxWidth < 600.dp) 8.dp else 16.dp
-
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(padding)
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        SearchBox(
-                            blizzardViewModel = blizzardViewModel,
-                            searchedEntity = searchedEntity,
-                            onNameChange = { searchedEntity = it },
-                            onRealmChange = { realm = it },
-                            onClickPress = {
-                                if (searchedEntity.isNotBlank() && realm.isNotBlank()) {
-                                    navController.navigate(route = Routes.LoadingScreen.route)
-                                    blizzardViewModel.clearCharacterData()
-                                    blizzardViewModel.loadCharacterProfileSummaryEquipmentMedia(
-                                        searchedEntity,
-                                        realm
-                                    )
-                                } else {
-                                    showError = !showError
-                                }
-                            },
-                            userViewModel = userViewModel
-                        )
+                        CardText(text = stringResource(R.string.search_screen_welcome_text))
+
+                        Spacer(modifier = Modifier.padding(16.dp))
+
+                        CardText(text = stringResource(R.string.how_to_use_search_function_text))
                     }
+                    
+                    Spacer(modifier = Modifier.padding(16.dp))
+                    
+                    SearchBox(
+                        blizzardViewModel = blizzardViewModel,
+                        searchedEntity = searchedEntity,
+                        onNameChange = { searchedEntity = it },
+                        onRealmChange = { realm = it },
+                        onClickPress = {
+                            if (searchedEntity.isNotBlank() && realm.isNotBlank()) {
+                                navController.navigate(route = Routes.LoadingScreen.route)
+                                blizzardViewModel.clearCharacterData()
+                                blizzardViewModel.loadCharacterProfileSummaryEquipmentMedia(
+                                    searchedEntity,
+                                    realm
+                                )
+                            } else {
+                                showError = !showError
+                            }
+                        },
+                        userViewModel = userViewModel
+                    )
                 }
             }
         )
@@ -134,7 +140,11 @@ fun SearchBox(
     val listOfRealms by blizzardViewModel.listOfRealms.observeAsState(emptyList())
     val preferences by userViewModel.userPreferences.observeAsState()
 
-    var selectedRealm by remember { mutableStateOf<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.realm.RealmInfo?>(null) }
+    var selectedRealm by remember {
+        mutableStateOf<com.sergimarrahyarenas.bloodstats.model.blizzardmodels.realm.RealmInfo?>(
+            null
+        )
+    }
     var expanded by remember { mutableStateOf(false) }
 
     val darkTheme = preferences?.theme == "dark"
@@ -239,6 +249,25 @@ fun SearchBox(
             ) {
                 Text(text = stringResource(R.string.search_text_button))
             }
+        }
+    }
+}
+
+@Composable
+fun CardText(text: String) {
+    Card(
+        shape = RoundedCornerShape(8.dp),
+        modifier = Modifier
+            .padding(16.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
     }
 }
